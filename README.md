@@ -4,6 +4,20 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 
 [GitHubのソースコード](https://github.com/Syo-M/WebPImageConverter) · [サイトを開く](https://syo-m.github.io/WebPImageConverter/) · [リリース](https://github.com/Syo-M/WebPImageConverter/releases)
 
+## 最新版：v1.1.0
+
+Bentoレイアウトへ画面を刷新しました。画像の追加・変換設定・プレビュー一覧・保存を4つの区画にまとめ、サイト名をコンパクトなヘッダーに統合しています。
+
+- 出力サイズを用途別のカードから選ぶモーダルを追加。カスタム値の指定にも対応
+- 3Dのファイル表現と、初回ホバー・ボタンで再生できる操作手順を追加
+- FAQをカテゴリーで絞り込めるカード型に変更し、回答を滑らかに開閉
+- 入力した距離を保つ慣性スクロールと、ページ内リンクの滑らかな移動を追加
+- モバイル表示・キーボード操作・OSの「視差効果を減らす」設定に対応
+
+画像の変換・個別ダウンロード・ZIP保存は引き続きブラウザ内で行います。外部JavaScriptライブラリは追加していません。
+
+変更点の詳細は[v1.1.0のRelease](https://github.com/Syo-M/WebPImageConverter/releases/tag/v1.1.0)で確認できます。
+
 ## ローカルで動かす
 
 1. GitHubの **Code → Download ZIP** からファイルをダウンロードし、ZIPを展開します。
@@ -37,9 +51,12 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 | 4 | [file-validation.js](js/file-validation.js)、[file-names.js](js/utils/file-names.js) | 形式・容量のチェック、重複しない保存名の作り方 |
 | 5 | [conversion-controller.js](js/controllers/conversion-controller.js) | `async` / `await`、1枚ずつの処理、例外処理 |
 | 6 | [decode-image.js](js/images/decode-image.js)、[convert-image.js](js/images/convert-image.js) | 画像の読み込み、Canvasへの描画、`toBlob()`によるWebP生成 |
-| 7 | [file-list.js](js/ui/file-list.js)、[page.js](js/ui/page.js) | 管理データをDOMへ反映し、画面を更新する方法 |
+| 7 | [file-list.js](js/ui/file-list.js)、[page.js](js/ui/page.js)、[conversion-summary.js](js/ui/conversion-summary.js) | 管理データをDOMへ反映し、画面を更新する方法 |
 | 8 | [download-controller.js](js/controllers/download-controller.js)、[download-file.js](js/utils/download-file.js) | 個別保存とZIP保存の進行 |
 | 9 | [create-zip.js](js/zip/create-zip.js)と同じフォルダの2ファイル | バイナリデータの結合、ZIPの構造、CRC-32 |
+| 10 | [size-dialog.js](js/ui/size-dialog.js)、[workflow-guide.js](js/ui/workflow-guide.js)、[faq.js](js/ui/faq.js) | モーダルの一時状態、操作例の再生、絞り込み、アニメーションの中断 |
+| 11 | [smooth-scroll.js](js/motion/smooth-scroll.js)、[scroll-spring.js](js/motion/scroll-spring.js)、[anchor-navigation.js](js/motion/anchor-navigation.js) | 入力と描画を分けること、位置・速度・経過時間、ページ内移動 |
+| 12 | [file-depth.js](js/motion/file-depth.js)、[guide-depth.js](js/motion/guide-depth.js) | CSS変数、ポインター追従、IntersectionObserver |
 
 短い関数から読みたい場合は、[quality.js](js/quality.js)や[format-file-size.js](js/utils/format-file-size.js)から始めることもできます。この2つはDOMを使わず、入力から結果を返す関数です。
 
@@ -75,7 +92,8 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 │   │   └── faq.js                # 質問の絞り込み・回答の開閉
 │   ├── motion/                  # 画面の動き（変換処理から独立）
 │   │   ├── file-depth.js         # ファイルの3D表現・ポインター追従
-│   │   ├── smooth-scroll.js      # ホイールの速度上限・穏やかな減速
+│   │   ├── smooth-scroll.js      # ホイールの目的位置と描画ループ
+│   │   ├── scroll-spring.js      # 位置・速度を引き継ぐ減衰の計算
 │   │   ├── anchor-navigation.js  # ページ内リンクの滑らかな移動
 │   │   └── guide-depth.js        # ガイドの傾き・一度だけの登場
 │   ├── utils/
@@ -104,6 +122,8 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 flowchart TD
   HTML["index.html"] --> Main["main.js：初期化・イベント登録"]
   Main --> Events["events：ファイル選択・ドロップ"]
+  Main --> Interactions["ui：サイズ選択・操作ガイド・FAQ"]
+  Main --> Motion["motion：3D・スクロール・ページ内移動"]
   Main --> Controllers["controllers：追加・変換・保存の進行"]
   Events --> Controllers
   Controllers --> State["state：画像一覧・処理中フラグ"]
@@ -114,6 +134,37 @@ flowchart TD
 ```
 
 これは主な呼び出し・更新の関係です。例えば`config.js`や容量表示用の関数など、共通の補助モジュールは省略しています。
+
+### 画面操作とアニメーションの接続
+
+`ui/`は画面の操作・表示、`motion/`は動きの計算を担当します。追加した操作ガイドやFAQは画像一覧の`appState`を書き換えず、サイズの適用だけが変換設定の更新へつながります。
+
+```mermaid
+flowchart TD
+  Main["main.js"] --> Size["ui/size-dialog.js"]
+  Size --> Input["max-sizeの値を更新しinputイベントを通知"]
+  Input --> Reset["file-controller.js：変換結果をリセット"]
+  Main --> Guide["ui/workflow-guide.js"]
+  Guide --> Quality["quality.js：画質の区分"]
+  Guide --> Phase["カードのdata-phaseとguide.css"]
+  Main --> FAQ["ui/faq.js：カテゴリー切替と回答の開閉"]
+  Main --> Depth["motion/file-depth.js・guide-depth.js"]
+  Depth --> CSS["CSS変数：3Dの傾き・位置"]
+  Main --> Scroll["motion/smooth-scroll.js"]
+  Scroll --> Spring["scroll-spring.js：次の位置と速度"]
+  Spring --> Frame["requestAnimationFrame内でスクロール位置を更新"]
+  Scroll --> Anchor["anchor-navigation.js：ページ内リンクの移動"]
+```
+
+### ホイール入力から停止まで
+
+1. `smooth-scroll.js`がホイールの値をピクセルへ換算し、目的位置に加算します。この時点では画面を移動しません。
+2. 描画ループが`scroll-spring.js`へ現在位置・速度・目的位置・経過時間を渡します。
+3. 返された位置を`window.scrollTo()`へ反映し、次のフレームへ位置と速度を引き継ぎます。
+4. 追加入力は目的位置だけを更新します。入力が止まった後も、同じ計算で滑らかに減速します。
+5. 目的位置に十分近づいたらループを止めます。キー・タッチ・逆方向の操作などでは前の惰性を中断します。
+
+ホイール入力のたびに大部分を即時移動させる方法は使いません。位置を更新する経路を描画ループにそろえることで、入力の刻みごとの段差を防いでいます。
 
 ### ES Modulesの基本
 
@@ -141,15 +192,17 @@ import { getQualityDescription } from '../quality.js';
 
 [size-dialog.js](js/ui/size-dialog.js)は、モーダル内の選択を一時的な値として保持し、「このサイズを適用」を押した時だけ隠し入力欄へ反映します。`input`イベントを発生させることで、画質や背景と同じ`handleSettingsChange()`へ接続します。Escや閉じるボタンで終了した場合は、元の設定を維持します。
 
-[motion/file-depth.js](js/motion/file-depth.js)はCSSの3D変形へ渡す値を、`requestAnimationFrame()`で少しずつ目標値に近づけます。静止したら更新を止めます。[motion/smooth-scroll.js](js/motion/smooth-scroll.js)は段階的なホイール入力に穏やかな減速を加えます。1回の移動量・先にためる距離・速度に上限を設け、連続入力で加速しすぎないようにしています。デバイス種別は直接取得できないため、細かな入力や横方向を含む操作、タッチ、モーダルのスクロールはブラウザの標準動作を使います。
+[motion/file-depth.js](js/motion/file-depth.js)はCSSの3D変形へ渡す値を、`requestAnimationFrame()`で少しずつ目標値に近づけます。静止したら更新を止めます。[motion/smooth-scroll.js](js/motion/smooth-scroll.js)では、ホイール入力時に目的位置だけを更新し、実際のスクロールは1本の`requestAnimationFrame()`ループで描画します。入力イベントから直接移動させないことで、ホイールの刻みごとの段差を防ぎます。入力距離は縮小・切り捨てず、タッチ・横スクロール・モーダル内の操作は標準動作のままです。
+
+[scroll-spring.js](js/motion/scroll-spring.js)は位置・速度・目的位置・経過時間から次のフレームを計算する関数です。位置と速度を引き継ぐ臨界減衰の式で、追加入力と停止を滑らかにつなぎます。小数の位置は描画位置と別に保持するため、ブラウザが整数に丸めても計算誤差が積み重なりません。逆方向への操作・キー操作・タブ切替では前の惰性を中断します。
 
 [anchor-navigation.js](js/motion/anchor-navigation.js)はページ内リンクの移動を担当します。約0.9〜1.4秒かけてゆっくり加速・減速し、利用者がホイール・タッチ・キー操作を始めたら中断します。到着後は移動先にフォーカスを移します。
 
-どちらもOSの「視差効果を減らす」に相当する設定（`prefers-reduced-motion`）を尊重します。これらは装飾と操作感を担当し、画像の変換やZIPの作成には関与しません。外部のアニメーションライブラリは使用していません。
+これらの動きはOSの「視差効果を減らす」に相当する設定（`prefers-reduced-motion`）を尊重します。これらは装飾と操作感を担当し、画像の変換やZIPの作成には関与しません。外部のアニメーションライブラリは使用していません。
 
 ### 操作手順とFAQ
 
-[workflow-guide.js](js/ui/workflow-guide.js)は3つの操作例を再生します。カードの`data-phase`を`ready`・`playing`・`done`へ切り替え、[guide.css](guide.css)のアニメーションにつなぎます。ガイドのスライダーは`guide-quality`、実際の設定は`quality`という別の入力欄で、操作例は`appState`を書き換えません。
+[workflow-guide.js](js/ui/workflow-guide.js)は3つの操作例を再生します。マウス操作ではカードへの初回ホバーで自動再生し、以降はボタンで再生できます。タッチ操作と「視差効果を減らす」設定ではホバーによる自動再生を行いません。カードの`data-phase`を`ready`・`playing`・`done`へ切り替え、[guide.css](guide.css)のアニメーションにつなぎます。ガイドのスライダーは`guide-quality`、実際の設定は`quality`という別の入力欄で、操作例は`appState`を書き換えません。
 
 [faq.js](js/ui/faq.js)は質問の`data-category`と選択中のボタンを比較して表示を切り替えます。回答はHTMLの`details`・`summary`で構成し、JavaScriptが有効なときはWeb Animations APIで高さを滑らかに変えます。連続クリックで中断されたアニメーションの完了処理が、新しい状態を上書きしないようにしています。
 

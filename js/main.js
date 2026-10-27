@@ -19,11 +19,14 @@ import { downloadCompletedImagesAsZip } from './controllers/download-controller.
 
 /** イベントを登録し、まだ画像がない初期画面を描画します。 */
 function initializeApplication() {
+  // ファイル追加とサイズ選択は、実際の変換設定につながる操作です。
   bindFileInputEvents();
   bindSizeDialog();
+  // OSの動きを減らす設定を共有し、各モジュール内で変更にも追従します。
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   bindFileDepth(reducedMotion);
   bindSmoothScroll(reducedMotion);
+  // 操作例・FAQ・ガイドの装飾は、変換用のappStateから独立しています。
   bindWorkflowGuide(reducedMotion);
   bindFaq(reducedMotion);
   bindGuideDepth(reducedMotion);

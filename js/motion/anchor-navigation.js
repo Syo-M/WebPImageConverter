@@ -1,6 +1,7 @@
 /** ページ内リンクは、ゆっくり加速・減速する専用の移動に分けます。 */
 export function bindAnchorNavigation(reducedMotion, stopWheelScrolling) {
   let frameId = 0;
+  /** 手動操作へ切り替えるとき、到着先へ勝手に動き続けないよう予約を取り消します。 */
   function cancelNavigation() {
     cancelAnimationFrame(frameId);
     frameId = 0;

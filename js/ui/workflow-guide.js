@@ -8,13 +8,17 @@ export function bindWorkflowGuide(reducedMotion) {
   const status = document.getElementById('guide-status');
   const qualityCard = document.querySelector('[data-step="settings"]');
   const qualityButton = qualityCard.querySelector('.guide-play');
+  const automaticPlaybackDone = new Set(); // 初回ホバーだけ自動再生し、その後はボタンで再生します。
+  const canHover = window.matchMedia('(hover: hover) and (pointer: fine)'); // マウスでホバーできる環境かを調べます。
   const resetCallbacks = new Map(); // 再生中のタイマーを、カードごとに管理します。
 
+  /** 操作例のスライダー・数値・画質区分だけを更新します。 */
   function renderDemoQuality(value) {
     qualityInput.value = value;
     qualityValue.textContent = `${value}%`;
     qualityLevel.textContent = getQualityDescription(value).label;
   }
+  /** 完了状態を表示し、再生ボタンを再び操作できるようにします。 */
   function finishExample(card, button) {
     card.dataset.phase = 'done';
     button.disabled = false;
@@ -28,7 +32,9 @@ export function bindWorkflowGuide(reducedMotion) {
   }
   document.querySelectorAll('[data-play-step]').forEach((button) => {
     const card = button.closest('.workflow-card');
-    button.addEventListener('click', () => {
+    /** 自動再生とボタンクリックで、同じ再生処理を共有します。 */
+    function playExample() {
+      automaticPlaybackDone.add(card);
       resetCallbacks.get(card)?.();
       card.dataset.phase = 'playing';
       button.disabled = true;
@@ -53,6 +59,12 @@ export function bindWorkflowGuide(reducedMotion) {
           resetCallbacks.delete(card);
         }, 1450));
       }
+    }
+    button.addEventListener('click', playExample);
+    card.addEventListener('pointerenter', (event) => {
+      if (event.pointerType !== 'mouse' || !canHover.matches || reducedMotion.matches) return;
+      if (automaticPlaybackDone.has(card)) return;
+      playExample();
     });
   });
   qualityInput.addEventListener('input', () => {

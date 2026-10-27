@@ -3,9 +3,10 @@ export function bindFaq(reducedMotion) {
   const filters = document.getElementById('faq-filters');
   const count = document.getElementById('faq-count');
   const questions = [...document.querySelectorAll('.faq-items details')];
-  const activeAnimations = new Map();
+  const activeAnimations = new Map(); // 質問ごとの再生中の動きと完了処理を対応付けます。
   filters.hidden = false;
 
+  // 選択カテゴリーと一致する質問だけを残し、表示件数も更新します。
   for (const button of filters.querySelectorAll('button')) {
     button.addEventListener('click', () => {
       const category = button.dataset.faqFilter;
