@@ -1,0 +1,29 @@
+# OS・ローカル環境
+.DS_Store
+node_modules/
+*.log
+
+# 制作メモ・生成時の指示書・一時的なテキスト
+*.md
+*.txt
+*.text
+
+# 公開・管理に必要な文書は追跡する
+!README.md
+!LICENSE
+!LICENSE.txt
+!LICENSE.md
+
+# テストコード・検証データ・検証レポート
+tests/
+test-data/
+fixtures/
+coverage/
+playwright-report/
+test-results/
+
+# 作業用の一時ファイル
+.tmp/
+tmp/
+*.tmp
+*.bak
