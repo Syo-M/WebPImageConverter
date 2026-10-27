@@ -2,5 +2,6 @@
   "name": "webp-image-converter",
   "private": true,
   "type": "module",
-  "description": "ブラウザ内で画像をWebPに変換する、学習用コメント付きの静的サイト"
+  "description": "ブラウザ内で画像をWebPに一括変換する静的サイト",
+  "version": "1.0.0"
 }

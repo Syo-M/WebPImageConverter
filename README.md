@@ -2,21 +2,17 @@
 
 JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイトです。HTML・CSS・JavaScriptのみで動作し、画像のアップロード先となるサーバーや外部APIは使いません。
 
-JavaScriptを学ぶ学生が、実際のアプリのコードを読み進められるように、機能ごとにファイルを分け、日本語コメントを付けています。フレームワーク・バンドラー・外部JavaScriptライブラリは不要です。
-
-[GitHubのソースコード](https://github.com/Syo-M/WebPImageConverter) · [GitHub Pagesの公開先](https://syo-m.github.io/WebPImageConverter/)
+[GitHubのソースコード](https://github.com/Syo-M/WebPImageConverter) · [サイトを開く](https://syo-m.github.io/WebPImageConverter/) · [リリース](https://github.com/Syo-M/WebPImageConverter/releases)
 
 ## ローカルで動かす
 
-```sh
-git clone https://github.com/Syo-M/WebPImageConverter.git
-cd WebPImageConverter
-python3 -m http.server 4173
-```
+1. GitHubの **Code → Download ZIP** からファイルをダウンロードし、ZIPを展開します。
+2. VS Codeの **ファイル → フォルダーを開く** で、展開したプロジェクトのフォルダーを開きます。
+3. VS Codeの拡張機能で **Live Server**（公開者：Ritwick Dey）を検索し、インストールします。拡張機能は[こちら](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)からも確認できます。
+4. VS Codeのファイル一覧で `index.html` を右クリックし、**Open with Live Server** を選びます。
+5. 自動で開いたブラウザで画像を追加し、変換を実行できます。
 
-ブラウザで [http://localhost:4173](http://localhost:4173) を開きます。Pythonは静的ファイルを配信するためだけに使い、画像を受信する処理はありません。他の静的HTTPサーバーでも動きます。
-
-**`index.html`をダブルクリックして開く方法は使わないでください。** ES Modulesの読み込みにはHTTPサーバーが必要です。`npm install`やビルドは不要です。`package.json`の`"type": "module"`は、Node.jsでも同じ`.js`をES Modulesとして扱うための指定です。
+モジュールを読み込むため、`index.html`はLive Server経由で開きます。ファイルを編集・保存すると、ブラウザの表示も更新されます。
 
 ## できること
 
@@ -42,7 +38,7 @@ python3 -m http.server 4173
 | 6 | [decode-image.js](js/images/decode-image.js)、[convert-image.js](js/images/convert-image.js) | 画像の読み込み、Canvasへの描画、`toBlob()`によるWebP生成 |
 | 7 | [file-list.js](js/ui/file-list.js)、[page.js](js/ui/page.js) | 管理データをDOMへ反映し、画面を更新する方法 |
 | 8 | [download-controller.js](js/controllers/download-controller.js)、[download-file.js](js/utils/download-file.js) | 個別保存とZIP保存の進行 |
-| 9 | [create-zip.js](js/zip/create-zip.js)と同じフォルダの2ファイル | バイナリデータの結合、ZIPの構造、CRC-32（発展編） |
+| 9 | [create-zip.js](js/zip/create-zip.js)と同じフォルダの2ファイル | バイナリデータの結合、ZIPの構造、CRC-32 |
 
 短い関数から読みたい場合は、[quality.js](js/quality.js)や[format-file-size.js](js/utils/format-file-size.js)から始めることもできます。この2つはDOMを使わず、入力から結果を返す関数です。
 
@@ -86,7 +82,7 @@ python3 -m http.server 4173
 ├── legal.css                     # ポリシーページのスタイル
 ├── LICENSE                       # ソースコード等の権利表示
 ├── package.json                  # Node.jsでのES Modules指定（依存なし）
-└── .nojekyll                     # GitHub PagesでJekyll処理を無効にする
+└── .nojekyll                     # 静的ファイルの配信設定
 ```
 
 ## モジュール同士の関係
@@ -178,7 +174,7 @@ ZIPは次の順に部品を並べます。
 [目次終端ヘッダー]
 ```
 
-WebPはすでに圧縮されているため、ZIPではSTORE（再圧縮しない）方式を使います。CRC-32はデータの破損を検出する検査値です。暗号化や安全性の保証ではありません。ヘッダー内の数字の位置はZIP形式の仕様に従い、[zip-headers.js](js/zip/zip-headers.js)にコメントを付けています。この部分は発展編として後から読めます。
+WebPはすでに圧縮されているため、ZIPではSTORE（再圧縮しない）方式を使います。CRC-32はデータの破損を検出する検査値です。暗号化や安全性の保証ではありません。ヘッダー内の数字の位置はZIP形式の仕様に従い、[zip-headers.js](js/zip/zip-headers.js)にコメントを付けています。
 
 ## このコードで使う主な用語
 
@@ -193,19 +189,6 @@ WebPはすでに圧縮されているため、ZIPではSTORE（再圧縮しな�
 | `try` / `catch` / `finally` | 失敗の扱いと、成功・失敗にかかわらず必要な後片付け |
 | `Uint8Array` / `DataView` | ZIPのようなバイト列を読み書きするための道具 |
 
-## 動作確認のポイント
-
-ローカルサーバーで、次の流れを確認できます。
-
-1. 複数画像を追加し、変換前からサムネイルが表示されること。
-2. 画質を39→40→79→80%へ変え、低・中・高画質の説明が切り替わること。
-3. 画像を変換し、個別保存とZIP保存ができること。
-4. 設定を変更すると変換結果がリセットされ、元画像のプレビューが残ること。
-5. 読み込めない画像があっても、他の画像を変換・保存できること。
-6. 個別削除・一括削除後に、同じ画像をもう一度追加できること。
-
-検証用のテスト・データ・生成メモは`.gitignore`の対象です。公開リポジトリにはアプリ本体とこのREADMEを含めます。
-
 ## 画質・仕様・上限
 
 画質の表示区分は10〜39%が低画質、40〜79%が中画質、80〜100%が高画質です。数値はエンコーダーへ渡す品質指定で、保持される画質の割合ではありません。100%でも可逆圧縮は指定しません。
@@ -218,16 +201,6 @@ WebPはすでに圧縮されているため、ZIPではSTORE（再圧縮しな�
 - ページを閉じると作業結果が失われる場合があります。ZIP64には対応しません。
 
 上限は[config.js](js/config.js)、画質の説明は[quality.js](js/quality.js)で確認できます。
-
-## GitHub Pagesで公開する
-
-1. このフォルダの追跡対象ファイルをリポジトリへプッシュします。
-2. **Settings → Pages → Build and deployment → Source**で**Deploy from a branch**を選びます。
-3. ブランチを`main`、フォルダを`/ (root)`にして保存します。
-
-ビルドは不要です。`js/`フォルダもすべて公開対象に含めてください。OGP・Twitter Card・canonicalは`https://syo-m.github.io/WebPImageConverter/`を指定しているため、カスタムドメインに変更した場合は`index.html`の絶対URLを更新します。
-
-GitHubはルートの`README.md`をリポジトリのトップページに表示します。このREADMEは`.gitignore`で除外していません。サイトにもソースコードを開くリンクがあります。
 
 ## ポリシー・権利表示
 
