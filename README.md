@@ -4,7 +4,13 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 
 [GitHubのソースコード](https://github.com/Syo-M/WebPImageConverter) · [サイトを開く](https://syo-m.github.io/WebPImageConverter/) · [リリース](https://github.com/Syo-M/WebPImageConverter/releases)
 
-## 最新版：v1.4.0
+## 最新版：v1.4.1
+
+CSSファイル5点をルートから`css/`フォルダへ移動し、ファイル構成を整理しました。変換画面・ポリシーページの読み込みパスと、READMEの構成図・リンクを更新しています。CSSの内容、画面デザイン、機能に変更はありません。
+
+詳細は[v1.4.1のRelease](https://github.com/Syo-M/WebPImageConverter/releases/tag/v1.4.1)で確認できます。
+
+### v1.4.0での主な変更
 
 フォルダからの一括取り込みと、追加・変換・保存の操作案内を追加しました。
 
@@ -121,10 +127,12 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 ```text
 .
 ├── index.html                    # 画面・画像一覧のtemplate・moduleの入口
-├── styles.css                    # 変換画面のスタイル
-├── guide.css                     # 操作手順・FAQのレイアウトとアニメーション
-├── theme.css                     # 配色・切替ボタン・ダークモードの各画面
-├── comparison.css                # 比較画面・拡大表示・一覧の高さ揃え
+├── css/                          # スタイルシート
+│   ├── styles.css                # 変換画面のスタイル
+│   ├── guide.css                 # 操作手順・FAQのレイアウトとアニメーション
+│   ├── theme.css                 # 配色・切替ボタン・ダークモードの各画面
+│   ├── comparison.css            # 比較画面・拡大表示・一覧の高さ揃え
+│   └── legal.css                 # ポリシーページのスタイル
 ├── js/
 │   ├── main.js                   # 起動とイベントの接続
 │   ├── theme.js                  # 初回描画前の配色・テーマ切替と保存
@@ -176,7 +184,6 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 ├── privacy.html                  # 日英のプライバシーポリシー
 ├── terms.html                    # 日英の利用条件
 ├── licenses.html                 # 日英の権利・ライセンス表示
-├── legal.css                     # ポリシーページのスタイル
 ├── LICENSE                       # ソースコード等の権利表示
 ├── package.json                  # Node.jsでのES Modules指定（依存なし）
 └── .nojekyll                     # 静的ファイルの配信設定
@@ -190,7 +197,7 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 flowchart TD
   HTML["index.html"] --> Main["main.js：初期化・イベント登録"]
   HTML --> Theme["theme.js：初回描画前の配色と切替"]
-  Theme --> ThemeCSS["data-themeとtheme.css"]
+  Theme --> ThemeCSS["data-themeとcss/theme.css"]
   Main --> Events["events：ファイル選択・ドロップ"]
   Main --> Interactions["ui：サイズ選択・操作ガイド・FAQ・画像比較"]
   Main --> Motion["motion：3D・スクロール・ページ内移動"]
@@ -219,7 +226,7 @@ flowchart TD
   Input --> Reset["file-controller.js：変換結果をリセット"]
   Main --> Guide["ui/workflow-guide.js"]
   Guide --> Quality["quality.js：画質の区分"]
-  Guide --> Phase["カードのdata-phaseとguide.css"]
+  Guide --> Phase["カードのdata-phaseとcss/guide.css"]
   Main --> FAQ["ui/faq.js：カテゴリー切替と回答の開閉"]
   Main --> Compare["ui/comparison-dialog.js"]
   Thumbnail["比較ボタン・変換済みサムネイル"] --> Compare
@@ -273,7 +280,7 @@ import { getQualityDescription } from '../quality.js';
 
 保存した選択がなければ`prefers-color-scheme`で端末設定を読み取り、端末側の変更にも追従します。ヘッダーで切り替えると`webp-color-theme`というキーへ`light`または`dark`だけを保存し、次回やポリシーページでも同じ配色を使います。別タブでの切り替えは`storage`イベントで反映します。保存が禁止されていても、その場の切り替えは動作します。
 
-[theme.css](theme.css)は変換画面・3D表現・FAQ・ガラス調モーダル・ポリシーの配色をそろえます。画像プレビューの画素や変換結果は変更しません。保存する表示設定についてはプライバシーポリシーに記載しています。
+[theme.css](css/theme.css)は変換画面・3D表現・FAQ・ガラス調モーダル・ポリシーの配色をそろえます。画像プレビューの画素や変換結果は変更しません。保存する表示設定についてはプライバシーポリシーに記載しています。
 
 ## サイズ選択と画面の動き
 
@@ -289,7 +296,7 @@ import { getQualityDescription } from '../quality.js';
 
 ### 操作手順とFAQ
 
-[workflow-guide.js](js/ui/workflow-guide.js)は3つの操作例を再生します。マウス操作ではカードへの初回ホバーで自動再生し、以降はボタンで再生できます。タッチ操作と「視差効果を減らす」設定ではホバーによる自動再生を行いません。カードの`data-phase`を`ready`・`playing`・`done`へ切り替え、[guide.css](guide.css)のアニメーションにつなぎます。ガイドのスライダーは`guide-quality`、実際の設定は`quality`という別の入力欄で、操作例は`appState`を書き換えません。
+[workflow-guide.js](js/ui/workflow-guide.js)は3つの操作例を再生します。マウス操作ではカードへの初回ホバーで自動再生し、以降はボタンで再生できます。タッチ操作と「視差効果を減らす」設定ではホバーによる自動再生を行いません。カードの`data-phase`を`ready`・`playing`・`done`へ切り替え、[guide.css](css/guide.css)のアニメーションにつなぎます。ガイドのスライダーは`guide-quality`、実際の設定は`quality`という別の入力欄で、操作例は`appState`を書き換えません。
 
 [faq.js](js/ui/faq.js)は質問の`data-category`と選択中のボタンを比較して表示を切り替えます。回答はHTMLの`details`・`summary`で構成し、JavaScriptが有効なときはWeb Animations APIで高さを滑らかに変えます。連続クリックで中断されたアニメーションの完了処理が、新しい状態を上書きしないようにしています。
 
@@ -303,7 +310,7 @@ import { getQualityDescription } from '../quality.js';
 
 [viewport.js](js/comparison/viewport.js)が倍率と注目位置（画像内の0〜1の比率）を左右で共有します。[pan.js](js/comparison/pan.js)はドラッグまたは矢印キーの移動量をこの共通状態へ渡し、[geometry.js](js/comparison/geometry.js)が画像端からはみ出さない表示位置を計算します。狭い画面では上下に並べ、同じ倍率と位置で比較します。
 
-[comparison.css](comparison.css)は一覧の行をCSS Gridで配置し、サムネイルとファイル情報を同じ行に置いています。画像は縦横比を保ったまま表示し、サムネイルの枠をファイル名の上端から比較ボタンの下端まで伸ばします。テキストが折り返された場合も、JavaScriptで高さを計算せずに追従します。
+[comparison.css](css/comparison.css)は一覧の行をCSS Gridで配置し、サムネイルとファイル情報を同じ行に置いています。画像は縦横比を保ったまま表示し、サムネイルの枠をファイル名の上端から比較ボタンの下端まで伸ばします。テキストが折り返された場合も、JavaScriptで高さを計算せずに追従します。
 
 閉じる操作・Esc・背景クリックで比較を終了し、Canvasを1×1へ戻して画像要素のURL参照を外します。Object URLそのものは画像一覧が所有しているため、比較画面から`revokeObjectURL()`は呼びません。読み込み中に閉じた場合はリクエスト番号で古い完了処理を無効にし、新しい比較画面を上書きしないようにします。
 
@@ -315,7 +322,7 @@ import { getQualityDescription } from '../quality.js';
 
 探索は対応画像100枚、またはフォルダを含む10,000項目を上限とし、打ち切った場合は通知します。抽出後も通常の追加処理で容量・枚数制限を検証します。保存時はフォルダ階層を引き継がず、同名画像は連番で区別します。空のフォルダやフォルダのドロップを読み取れないブラウザでは、画像ファイルを直接選択して追加してください。
 
-[next-action.js](js/ui/next-action.js)は一覧の状態から次の操作を表示します。未変換画像があると変換ボタン、処理が終わり成功画像があるとZIP保存ボタンへ`primary`クラスを付け替えます。一部失敗した場合も成功分を保存でき、設定変更や追加で未変換画像ができると変換へ案内が戻ります。[styles.css](styles.css)は次の操作をアクセント色・上面のハイライト・厚みのある影で示します。`next-action.js`は直前の段階を覚え、画像追加・変換完了・再設定によって次の操作が変わったときだけ`action-arrival`クラスを切り替えます。光が約1秒で外側へ広がり、ボタンは約0.7秒でわずかに膨らんで戻り、同時に表面のグラデーションが約0.7秒で流れます。表面の色と外側の光は別の疑似要素で描き、文字の背後で重ねます。拡大縮小には`scale`を使い、ホバー・押下の`transform`と分けています。演出は一度だけで、処理中の再描画やZIP保存後に繰り返しません。Tipsの見出しも「次は画像を変換」「次はZIPで保存」へ更新します。ホバーでボタンが少し浮き、アイコンが進み、押すと沈みます。「視差効果を減らす」設定では発光と移動を省略し、強制配色ではシステムの色で操作対象を示します。Tips内とWebP出力欄の両方に「WebPに変換」ボタンを置きます。`elements.js`の`conversionButtons`配列でまとめ、`main.js`で同じ`convertPendingImages()`へ接続し、`page.js`で無効状態とラベルを同期します。変換中は両方を無効にし、Tips側も「変換中…」と表示します。完了するとTips内のボタンと説明をZIP保存へ切り替えます。ZIP保存も`zipButtons`配列で2か所の状態とイベントを同期し、同じ`downloadCompletedImagesAsZip()`を呼び出します。設定変更や未変換画像の追加時は変換ボタンへ戻します。
+[next-action.js](js/ui/next-action.js)は一覧の状態から次の操作を表示します。未変換画像があると変換ボタン、処理が終わり成功画像があるとZIP保存ボタンへ`primary`クラスを付け替えます。一部失敗した場合も成功分を保存でき、設定変更や追加で未変換画像ができると変換へ案内が戻ります。[styles.css](css/styles.css)は次の操作をアクセント色・上面のハイライト・厚みのある影で示します。`next-action.js`は直前の段階を覚え、画像追加・変換完了・再設定によって次の操作が変わったときだけ`action-arrival`クラスを切り替えます。光が約1秒で外側へ広がり、ボタンは約0.7秒でわずかに膨らんで戻り、同時に表面のグラデーションが約0.7秒で流れます。表面の色と外側の光は別の疑似要素で描き、文字の背後で重ねます。拡大縮小には`scale`を使い、ホバー・押下の`transform`と分けています。演出は一度だけで、処理中の再描画やZIP保存後に繰り返しません。Tipsの見出しも「次は画像を変換」「次はZIPで保存」へ更新します。ホバーでボタンが少し浮き、アイコンが進み、押すと沈みます。「視差効果を減らす」設定では発光と移動を省略し、強制配色ではシステムの色で操作対象を示します。Tips内とWebP出力欄の両方に「WebPに変換」ボタンを置きます。`elements.js`の`conversionButtons`配列でまとめ、`main.js`で同じ`convertPendingImages()`へ接続し、`page.js`で無効状態とラベルを同期します。変換中は両方を無効にし、Tips側も「変換中…」と表示します。完了するとTips内のボタンと説明をZIP保存へ切り替えます。ZIP保存も`zipButtons`配列で2か所の状態とイベントを同期し、同じ`downloadCompletedImagesAsZip()`を呼び出します。設定変更や未変換画像の追加時は変換ボタンへ戻します。
 
 ## 画像1枚のデータを追う
 
