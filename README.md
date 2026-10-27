@@ -4,7 +4,21 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 
 [GitHubのソースコード](https://github.com/Syo-M/WebPImageConverter) · [サイトを開く](https://syo-m.github.io/WebPImageConverter/) · [リリース](https://github.com/Syo-M/WebPImageConverter/releases)
 
-## 最新版：v1.2.0
+## 最新版：v1.3.0
+
+変換したWebPを保存する前に、元画像との画質の違いを拡大して確認できるようになりました。
+
+- 各画像の「変換前後を比較」ボタン、またはサムネイルから比較画面を開けます
+- 全体表示・100%表示・最大400%の拡大に対応し、左右の表示倍率と移動位置を連動します
+- ドラッグ・矢印キーで同じ箇所を確認でき、スマートフォンでは上下に並べて表示します
+- 比較画面からWebPを個別保存できます
+- 一覧のサムネイルを拡大し、ファイル名の上端から比較ボタンの下端まで揃えました
+
+比較処理もブラウザ内で完結します。比較用の元画像はWebPと同じ出力サイズへ揃えて表示します。追加した処理は表示・読み込み・座標計算・移動操作に分け、日本語コメントと下記の構成図で説明しています。
+
+詳細は[v1.3.0のRelease](https://github.com/Syo-M/WebPImageConverter/releases/tag/v1.3.0)で確認できます。
+
+### v1.2.0での主な変更
 
 ライト／ダークの表示切り替えに対応しました。ヘッダーの月／太陽ボタンで変更できます。
 
@@ -57,6 +71,7 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 - モーダルで出力サイズを選択（元のサイズ・プリセット・カスタム指定）
 - ライト／ダークの切り替え、端末設定への初回追従、表示テーマの保存
 - 変換前後の容量・削減率・出力サイズの確認
+- 各画像の「変換前後を比較」ボタンから元画像とWebPを拡大比較（左右の倍率・位置を連動）
 - 個別ダウンロード、成功した画像をまとめたZIP保存
 - 同名ファイルの連番化、個別・一括削除、設定変更後の再変換
 - 壊れた画像などが混ざった場合のエラー表示と、残りの画像の変換継続
@@ -80,6 +95,7 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 | 11 | [smooth-scroll.js](js/motion/smooth-scroll.js)、[scroll-spring.js](js/motion/scroll-spring.js)、[anchor-navigation.js](js/motion/anchor-navigation.js) | 入力と描画を分けること、位置・速度・経過時間、ページ内移動 |
 | 12 | [file-depth.js](js/motion/file-depth.js)、[guide-depth.js](js/motion/guide-depth.js) | CSS変数、ポインター追従、IntersectionObserver |
 | 13 | [theme.js](js/theme.js) | 初回描画前の配色、端末設定、localStorage、ページ間の共有 |
+| 14 | [comparison-dialog.js](js/ui/comparison-dialog.js)と[js/comparison/](js/comparison/) | 非同期読み込みの中断、同じ座標・倍率での比較、ドラッグとキーボード操作 |
 
 短い関数から読みたい場合は、[quality.js](js/quality.js)や[format-file-size.js](js/utils/format-file-size.js)から始めることもできます。この2つはDOMを使わず、入力から結果を返す関数です。
 
@@ -91,6 +107,7 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 ├── styles.css                    # 変換画面のスタイル
 ├── guide.css                     # 操作手順・FAQのレイアウトとアニメーション
 ├── theme.css                     # 配色・切替ボタン・ダークモードの各画面
+├── comparison.css                # 比較画面・拡大表示・一覧の高さ揃え
 ├── js/
 │   ├── main.js                   # 起動とイベントの接続
 │   ├── theme.js                  # 初回描画前の配色・テーマ切替と保存
@@ -114,7 +131,13 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 │   │   ├── conversion-summary.js # 変換済み画像の容量集計
 │   │   ├── size-dialog.js        # サイズ選択モーダル・入力検証
 │   │   ├── workflow-guide.js     # 実際の設定と独立した操作例
-│   │   └── faq.js                # 質問の絞り込み・回答の開閉
+│   │   ├── faq.js                # 質問の絞り込み・回答の開閉
+│   │   └── comparison-dialog.js  # 比較モーダルの開始・終了・保存
+│   ├── comparison/             # 比較用プレビューと表示操作
+│   │   ├── content.js           # 静止プレビュー・容量と寸法・メモリ解放
+│   │   ├── viewport.js          # 左右共通の倍率と注目位置
+│   │   ├── pan.js               # ドラッグ・矢印キーの移動
+│   │   └── geometry.js          # 全体表示の倍率・画像端の座標計算
 │   ├── motion/                  # 画面の動き（変換処理から独立）
 │   │   ├── file-depth.js         # ファイルの3D表現・ポインター追従
 │   │   ├── smooth-scroll.js      # ホイールの目的位置と描画ループ
@@ -149,7 +172,7 @@ flowchart TD
   HTML --> Theme["theme.js：初回描画前の配色と切替"]
   Theme --> ThemeCSS["data-themeとtheme.css"]
   Main --> Events["events：ファイル選択・ドロップ"]
-  Main --> Interactions["ui：サイズ選択・操作ガイド・FAQ"]
+  Main --> Interactions["ui：サイズ選択・操作ガイド・FAQ・画像比較"]
   Main --> Motion["motion：3D・スクロール・ページ内移動"]
   Main --> Controllers["controllers：追加・変換・保存の進行"]
   Events --> Controllers
@@ -175,6 +198,12 @@ flowchart TD
   Guide --> Quality["quality.js：画質の区分"]
   Guide --> Phase["カードのdata-phaseとguide.css"]
   Main --> FAQ["ui/faq.js：カテゴリー切替と回答の開閉"]
+  Main --> Compare["ui/comparison-dialog.js"]
+  Thumbnail["比較ボタン・変換済みサムネイル"] --> Compare
+  Compare --> Content["comparison/content.js：比較用の静止プレビュー"]
+  Compare --> Viewport["comparison/viewport.js：共通の倍率と位置"]
+  Viewport --> Geometry["comparison/geometry.js：表示座標の計算"]
+  Viewport --> Pan["comparison/pan.js：ドラッグ・矢印キー"]
   Main --> Depth["motion/file-depth.js・guide-depth.js"]
   Depth --> CSS["CSS変数：3Dの傾き・位置"]
   Main --> Scroll["motion/smooth-scroll.js"]
@@ -242,6 +271,18 @@ import { getQualityDescription } from '../quality.js';
 [faq.js](js/ui/faq.js)は質問の`data-category`と選択中のボタンを比較して表示を切り替えます。回答はHTMLの`details`・`summary`で構成し、JavaScriptが有効なときはWeb Animations APIで高さを滑らかに変えます。連続クリックで中断されたアニメーションの完了処理が、新しい状態を上書きしないようにしています。
 
 [guide-depth.js](js/motion/guide-depth.js)はポインターに合わせた小さな傾きと、`IntersectionObserver`による一度だけの登場を担当します。「視差効果を減らす」設定では傾き・登場・操作例・回答の開閉アニメーションを省略し、内容と操作は維持します。
+
+## 変換前後の比較
+
+各画像の「変換前後を比較」ボタン、または変換済みのサムネイルから[comparison-dialog.js](js/ui/comparison-dialog.js)を開きます。変換前・設定変更後は文字付きの比較ボタンを非表示にし、処理中は比較操作を無効にします。出力と異なる設定の画像を比較しないようにしています。
+
+[content.js](js/comparison/content.js)は元画像を読み込み、WebPと同じ出力サイズのCanvasへ静止フレームを描きます。元画像の縮小には変換処理と同じ高品質の補間を使います。左右で表示サイズをそろえるためのプレビューで、元ファイルを書き換える処理ではありません。100%表示はWebPの1ピクセルを画面の1 CSSピクセルで表示し、最大400%まで拡大できます。
+
+[viewport.js](js/comparison/viewport.js)が倍率と注目位置（画像内の0〜1の比率）を左右で共有します。[pan.js](js/comparison/pan.js)はドラッグまたは矢印キーの移動量をこの共通状態へ渡し、[geometry.js](js/comparison/geometry.js)が画像端からはみ出さない表示位置を計算します。狭い画面では上下に並べ、同じ倍率と位置で比較します。
+
+[comparison.css](comparison.css)は一覧の行をCSS Gridで配置し、サムネイルとファイル情報を同じ行に置いています。画像は縦横比を保ったまま表示し、サムネイルの枠をファイル名の上端から比較ボタンの下端まで伸ばします。テキストが折り返された場合も、JavaScriptで高さを計算せずに追従します。
+
+閉じる操作・Esc・背景クリックで比較を終了し、Canvasを1×1へ戻して画像要素のURL参照を外します。Object URLそのものは画像一覧が所有しているため、比較画面から`revokeObjectURL()`は呼びません。読み込み中に閉じた場合はリクエスト番号で古い完了処理を無効にし、新しい比較画面を上書きしないようにします。
 
 ## 画像1枚のデータを追う
 

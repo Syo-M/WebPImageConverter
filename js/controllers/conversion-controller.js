@@ -59,5 +59,5 @@ export async function convertPendingImages() {
   const successfulImageCount = conversionQueue.length - failedImageCount;
   showNotice(failedImageCount > 0
     ? `${successfulImageCount}枚の変換が完了しました。${failedImageCount}枚は読み込めませんでした。各画像のエラーをご確認ください。`
-    : `${successfulImageCount}枚の変換が完了しました。個別またはZIPで保存できます。`);
+    : `${successfulImageCount}枚の変換が完了しました。「変換前後を比較」で画質を確認し、個別またはZIPで保存できます。`);
 }

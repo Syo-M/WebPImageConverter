@@ -2,7 +2,7 @@ import { pageElements } from './elements.js';
 import { formatFileSize } from '../utils/format-file-size.js';
 
 /** templateのひな型をコピーし、画像1枚分の行とボタン操作を作成します。 */
-export function addImageRow(imageEntry, { onDownloadRequested, onRemoveRequested }) {
+export function addImageRow(imageEntry, { onDownloadRequested, onRemoveRequested, onCompareRequested }) {
   const rowElement = pageElements.fileTemplate.content.firstElementChild.cloneNode(true);
   imageEntry.rowElement = rowElement;
 
@@ -11,6 +11,10 @@ export function addImageRow(imageEntry, { onDownloadRequested, onRemoveRequested
     imageEntry.previewFailed = true;
     rowElement.querySelector('img').hidden = true;
     rowElement.querySelector('.thumbnail-fallback').hidden = false;
+  });
+  // 文字付きボタンとサムネイルのどちらからも、同じ比較画面を開きます。
+  rowElement.querySelectorAll('.compare-preview, .compare-action').forEach((button) => {
+    button.addEventListener('click', () => onCompareRequested(imageEntry));
   });
   rowElement.querySelector('.download-one').addEventListener('click', () => {
     onDownloadRequested(imageEntry);
@@ -53,6 +57,12 @@ export function renderImageRow(imageEntry) {
   }
   rowElement.querySelector('.download-one').setAttribute('aria-label', `${imageEntry.outputFileName} を保存`);
   rowElement.querySelector('.remove-one').setAttribute('aria-label', `${originalFileName} を削除`);
+  const compareButton = rowElement.querySelector('.compare-preview');
+  compareButton.classList.toggle('comparison-available', Boolean(imageEntry.convertedBlob));
+  compareButton.setAttribute('aria-label', `${originalFileName} の変換前後を比較`);
+  const compareAction = rowElement.querySelector('.compare-action');
+  compareAction.hidden = !imageEntry.convertedBlob; // 変換できた画像にだけ、目立つ入口を表示します。
+  compareAction.setAttribute('aria-label', `${originalFileName} の変換前後を比較する`);
   renderImageThumbnail(imageEntry);
 }
 
@@ -78,6 +88,9 @@ function renderImageThumbnail(imageEntry) {
 
 /** 処理中は削除と保存を止め、元データが途中で変わることを防ぎます。 */
 export function updateImageRowButtons(imageEntry, isLocked) {
+  imageEntry.rowElement.querySelectorAll('.compare-preview, .compare-action').forEach((button) => {
+    button.disabled = isLocked || !imageEntry.convertedBlob;
+  });
   imageEntry.rowElement.querySelector('.remove-one').disabled = isLocked;
   imageEntry.rowElement.querySelector('.download-one').disabled = isLocked || !imageEntry.convertedBlob;
 }

@@ -1,0 +1,90 @@
+/* サムネイルを比較画面の入口にします。変換前も画像は薄くせず表示します。 */
+.compare-preview {padding:0;font:inherit}
+.compare-preview:disabled {opacity:1;cursor:default}
+.compare-preview:not(:disabled):hover {border-color:var(--purple);box-shadow:0 0 0 3px #937ac72b}
+.compare-hint {display:none;position:absolute;right:2px;bottom:2px;border-radius:4px;padding:2px 4px;font-size:9px;line-height:1.4;background:#33263ed9;color:#fff;pointer-events:none}
+.comparison-available .compare-hint {display:block}
+/* 文字付きの比較ボタンをファイル情報の直下へ置き、機能を見つけやすくします。 */
+.compare-action {display:flex;width:fit-content;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:8px 11px;margin-top:9px;border:1px solid color-mix(in srgb,var(--purple) 38%,var(--line));border-radius:9px;background:var(--tint);color:var(--purple);font-size:12px;font-weight:550;line-height:1.5;transition:background .2s,border-color .2s,box-shadow .2s}
+.compare-action svg {width:17px;height:17px;stroke-width:1.6}
+.compare-action:hover:not(:disabled) {border-color:var(--purple);box-shadow:0 3px 12px #76579e1f}
+.compare-action:not(:disabled):active {transform:translateY(1px)}
+@media(pointer:coarse) {.compare-action {min-height:44px}}
+/* 画像と情報を同じ行のトラックへ配置し、サムネイルを情報欄の高さまで伸ばします。 */
+.file-row {display:grid;grid-template-columns:80px minmax(0,1fr) auto 34px 34px}
+.file-row>.thumbnail {grid-column:1;grid-row:1;align-self:stretch;width:80px;height:auto;min-height:52px}
+.file-row>.thumbnail img {position:absolute;inset:0}
+.file-row>.file-info {grid-column:2;grid-row:1;align-self:start}
+.file-row>.file-status {grid-column:3;grid-row:1;margin:0}
+.file-row>.download-one {grid-column:4;grid-row:1}
+.file-row>.remove-one {grid-column:5;grid-row:1}
+@media(max-width:900px) {
+  .file-row {grid-template-columns:80px minmax(0,1fr) 38px 38px}
+  .file-row>.file-info {grid-column:2/-1}
+  .file-row>.file-status {grid-column:2;grid-row:2}
+  .file-row>.download-one {grid-column:3;grid-row:2}
+  .file-row>.remove-one {grid-column:4;grid-row:2}
+}
+@media(max-width:430px) {
+  .file-row {grid-template-columns:72px minmax(0,1fr) 38px 38px}
+  .file-row>.thumbnail {width:72px}
+}
+/* 大きな画像の確認に集中できる、ライト／ダーク共通の比較用ダイアログ。 */
+.comparison-dialog {width:min(1120px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:22px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:25px;box-shadow:0 28px 80px #20163c4d;overscroll-behavior:contain}
+.comparison-dialog::backdrop {background:#201b3659;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.comparison-dialog[open] {animation:dialog-arrive .2s ease-out}
+.comparison-dialog .dialog-heading {align-items:flex-start;gap:20px}
+.comparison-dialog h2 {font-size:19px}
+.comparison-dialog .dialog-heading>.icon-button {width:38px;height:38px;border:1px solid var(--line);background:var(--white);border-radius:50%}
+.comparison-filename {font-size:12px;color:var(--muted);line-height:1.7;margin:5px 0 0;overflow-wrap:anywhere}
+.comparison-toolbar {display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:20px 0 16px}
+.comparison-view-buttons,.comparison-zoom-buttons {display:flex;align-items:center;gap:5px}
+.comparison-toolbar .button {min-height:36px;padding:8px 13px;font-size:11px;border-radius:9px;box-shadow:none}
+.comparison-toolbar .button[aria-pressed=true] {border-color:var(--purple);background:var(--tint);color:var(--purple)}
+.comparison-zoom-buttons {padding:2px;border:1px solid var(--line);border-radius:11px;background:var(--white)}
+.comparison-zoom-buttons .icon-button {width:32px;height:30px;font-size:18px;padding:0}
+#comparison-zoom {min-width:51px;text-align:center;font-size:12px;font-variant-numeric:tabular-nums}
+.comparison-sync {display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-left:auto}
+.comparison-sync svg {width:15px;height:15px}
+.comparison-status {padding:55px 20px;text-align:center;font-size:13px;line-height:1.9;color:var(--muted);margin:0;border:1px dashed var(--line);border-radius:16px}
+.comparison-grid {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.comparison-pane {min-width:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--white)}
+.comparison-pane>header {min-height:65px;padding:12px 15px}
+.comparison-pane h3 {display:flex;align-items:center;gap:8px;font-size:13px;font-weight:550;margin:0}
+.comparison-pane header p {font-size:11px;line-height:1.7;color:var(--muted);margin:5px 0 0;font-variant-numeric:tabular-nums}
+.comparison-webp {font-size:10px;padding:3px 6px;border-radius:5px;color:var(--purple);background:var(--tint)}
+.comparison-viewport {position:relative;height:clamp(220px,43dvh,430px);overflow:hidden;isolation:isolate;border-top:1px solid var(--line);background:repeating-conic-gradient(#e4e3e9 0 25%,#f8f7fb 0 50%) 0 0/20px 20px;touch-action:pan-y;user-select:none}
+.comparison-viewport:focus-visible {outline:3px solid var(--purple);outline-offset:-3px}
+.comparison-viewport[data-can-pan=true] {cursor:grab}
+.comparison-viewport.is-panning {cursor:grabbing}
+.comparison-plane {position:absolute;top:0;left:0;transform-origin:0 0;pointer-events:none}
+.comparison-plane>canvas,.comparison-plane>img {display:block;width:100%;height:100%;max-width:none;object-fit:fill}
+.comparison-help {font-size:11px;line-height:1.85;color:var(--muted);margin:15px 0 0}
+.comparison-footer {display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:17px}
+.comparison-footer>span {font-size:11px;line-height:1.8;color:var(--muted)}
+.comparison-footer>div {display:flex;gap:8px}
+.comparison-footer .button {min-height:40px;font-size:11px;white-space:nowrap}
+:root[data-theme=dark] .comparison-dialog {box-shadow:0 28px 80px #0008}
+:root[data-theme=dark] .comparison-dialog::backdrop {background:#07060c80}
+:root[data-theme=dark] .comparison-viewport {background:repeating-conic-gradient(#353541 0 25%,#252631 0 50%) 0 0/20px 20px}
+@media(max-width:650px) {
+  .comparison-dialog {width:calc(100% - 20px);max-height:calc(100dvh - 20px);padding:15px;border-radius:20px}
+  .comparison-grid {grid-template-columns:minmax(0,1fr);gap:12px}
+  .comparison-viewport {height:220px}
+  .comparison-toolbar {gap:10px;margin-top:16px}
+  .comparison-sync {width:100%;margin:0}
+  .comparison-pane>header {padding:11px 13px;min-height:63px}
+  .comparison-footer {flex-direction:column;align-items:stretch;gap:12px}
+  .comparison-footer>div {justify-content:flex-end}
+  .comparison-dialog .dialog-heading h2 {font-size:17px}
+  .comparison-help {font-size:11px}
+}
+@media(pointer:coarse) {
+  .comparison-toolbar .button,.comparison-zoom-buttons .icon-button,.comparison-footer .button {min-height:44px}
+  .comparison-zoom-buttons .icon-button {min-width:38px}
+}
+@media(prefers-reduced-motion:reduce) {.comparison-dialog[open] {animation:none}}
+@media(forced-colors:active) {
+  .comparison-dialog,.comparison-pane,.comparison-viewport {background:Canvas;color:CanvasText;border-color:CanvasText}
+  .comparison-toolbar .button[aria-pressed=true] {outline:2px solid Highlight}
+}

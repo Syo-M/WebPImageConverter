@@ -1,3 +1,4 @@
+import { openImageComparison } from '../ui/comparison-dialog.js';
 import { appState, createImageEntry, resetConversionResult, disposeImageEntry } from '../state.js';
 import { validateImageFile } from '../file-validation.js';
 import { addImageRow, renderImageRow } from '../ui/file-list.js';
@@ -22,6 +23,7 @@ export function addImageFiles(incomingFiles) {
     addImageRow(imageEntry, {
       onDownloadRequested: downloadSingleImage,
       onRemoveRequested: removeImage,
+      onCompareRequested: openImageComparison,
     });
   }
 

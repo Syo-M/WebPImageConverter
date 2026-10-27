@@ -3,6 +3,7 @@
  * ここでは「どの操作で、どの処理を呼ぶか」だけを決めます。
  * 実際の画像処理・画面描画・ZIP作成は、import先の小さなモジュールへ分けています。
  */
+import { bindComparisonDialog } from './ui/comparison-dialog.js';
 import { bindWorkflowGuide } from './ui/workflow-guide.js';
 import { bindFaq } from './ui/faq.js';
 import { bindGuideDepth } from './motion/guide-depth.js';
@@ -22,6 +23,7 @@ function initializeApplication() {
   // ファイル追加とサイズ選択は、実際の変換設定につながる操作です。
   bindFileInputEvents();
   bindSizeDialog();
+  bindComparisonDialog();
   // OSの動きを減らす設定を共有し、各モジュール内で変更にも追従します。
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   bindFileDepth(reducedMotion);
