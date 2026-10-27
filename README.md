@@ -1,89 +1,246 @@
-# こかる — WebP画像変換
+# 画像をWebPに変換
 
-HTML / CSS / JavaScriptのみで動作する静的な画像変換サイトです。ビルド・APIキー・バックエンドは不要です。画像の読み込み、変換、ZIP作成はブラウザ内で完結し、画像を外部に送信しません。外部フォント・解析タグ・外部JavaScriptライブラリ・実行時CDNへの依存もありません。
+JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイトです。HTML・CSS・JavaScriptのみで動作し、画像のアップロード先となるサーバーや外部APIは使いません。
 
-## 起動
+JavaScriptを学ぶ学生が、実際のアプリのコードを読み進められるように、機能ごとにファイルを分け、日本語コメントを付けています。フレームワーク・バンドラー・外部JavaScriptライブラリは不要です。
 
-このフォルダで次を実行し、http://localhost:4173 を開きます。
+[GitHubのソースコード](https://github.com/Syo-M/WebPImageConverter) · [GitHub Pagesの公開先](https://syo-m.github.io/WebPImageConverter/)
+
+## ローカルで動かす
 
 ```sh
+git clone https://github.com/Syo-M/WebPImageConverter.git
+cd WebPImageConverter
 python3 -m http.server 4173
 ```
 
-## 機能
+ブラウザで [http://localhost:4173](http://localhost:4173) を開きます。Pythonは静的ファイルを配信するためだけに使い、画像を受信する処理はありません。他の静的HTTPサーバーでも動きます。
 
-- JPEG / PNG / GIF / WebP / BMP / AVIF を混在させて追加
-- ドラッグ＆ドロップ、複数ファイル選択（スマートフォン対応）
-- `canvas.toBlob()` によるWebP変換、10〜100%の画質指定
-- 縦横比を保つ縮小、透明背景の保持または白背景への合成
-- サムネイル、出力サイズ、変換前後の容量、削減率の表示
-- 画像ごとのダウンロード、変換済み画像をまとめたZIPのダウンロード
-- 同名ファイルは `image (2).webp` のように連番化（ZIPでも上書きしません）
-- 壊れた画像などは行ごとにエラーを表示し、残りの画像は変換を続行
-- 設定変更時に結果を破棄して再変換、個別削除、一括削除
+**`index.html`をダブルクリックして開く方法は使わないでください。** ES Modulesの読み込みにはHTTPサーバーが必要です。`npm install`やビルドは不要です。`package.json`の`"type": "module"`は、Node.jsでも同じ`.js`をES Modulesとして扱うための指定です。
 
-追加後は「WebPに変換」を押します。変換中に追加した画像は次回の変換対象になります。ZIPには変換に成功した画像だけが入ります。
+## できること
 
-## 仕様・制限
+- JPEG / PNG / GIF / WebP / BMP / AVIFの混在した複数画像を追加
+- ファイル選択・ドラッグ＆ドロップ、追加直後のサムネイル表示
+- 10〜100%の画質指定、縦横比を保つ縮小、透明背景の保持・白背景への合成
+- 変換前後の容量・削減率・出力サイズの確認
+- 個別ダウンロード、成功した画像をまとめたZIP保存
+- 同名ファイルの連番化、個別・一括削除、設定変更後の再変換
+- 壊れた画像などが混ざった場合のエラー表示と、残りの画像の変換継続
 
-- 最新のChrome / Edge / Firefox / Safariなど、WebP書き出しに対応するブラウザが必要です。実際の出力MIMEタイプを検査し、未対応ならエラーを表示します。
-- GIF・アニメーション画像は先頭の1フレームを静止画に変換します。ImageBitmapが使えない古い環境ではネイティブ画像デコードにフォールバックし、表示時点のフレームが使われる場合があります。
-- 画像の読み込みはブラウザ標準の機能を使用します。形式ごとの読み込み対応はブラウザによって異なります。HEIC・HEIFは非対応のため、JPEGやPNGに書き出してから追加してください。
-- 画質は非可逆圧縮の指定値で、必ず小さくなる保証はありません。大きくなった場合も明示します。EXIFなどのメタデータは保持しません。
-- 上限：1ファイル50MB、一覧100枚、入力合計500MB、元画像4,000万画素、ZIP内の出力合計500MB。端末のメモリにより、それ以下でも処理できない場合があります。
-- 画像は1枚ずつ処理します。ブラウザのタブを閉じると作業結果は失われます。
-- ZIPは圧縮済みのWebPをSTORE方式で格納します。日本語のファイル名に対応します。ZIP64には対応しません。
+## コードを読む順番
+
+まずは [js/main.js](js/main.js) を開いてください。イベントと呼び出す関数の対応が、アプリ全体の入口です。関数名を探すと、その処理を担当するファイルへ進めます。
+
+| 順番 | 読むファイル | 注目すること |
+| --- | --- | --- |
+| 1 | [main.js](js/main.js) | `import`、初期化、`addEventListener`による操作と処理の接続 |
+| 2 | [elements.js](js/ui/elements.js)、[state.js](js/state.js) | HTML要素とアプリの管理データを分ける考え方 |
+| 3 | [file-input-events.js](js/events/file-input-events.js)、[file-controller.js](js/controllers/file-controller.js) | 選択・ドロップから画像を追加する流れ |
+| 4 | [file-validation.js](js/file-validation.js)、[file-names.js](js/utils/file-names.js) | 形式・容量のチェック、重複しない保存名の作り方 |
+| 5 | [conversion-controller.js](js/controllers/conversion-controller.js) | `async` / `await`、1枚ずつの処理、例外処理 |
+| 6 | [decode-image.js](js/images/decode-image.js)、[convert-image.js](js/images/convert-image.js) | 画像の読み込み、Canvasへの描画、`toBlob()`によるWebP生成 |
+| 7 | [file-list.js](js/ui/file-list.js)、[page.js](js/ui/page.js) | 管理データをDOMへ反映し、画面を更新する方法 |
+| 8 | [download-controller.js](js/controllers/download-controller.js)、[download-file.js](js/utils/download-file.js) | 個別保存とZIP保存の進行 |
+| 9 | [create-zip.js](js/zip/create-zip.js)と同じフォルダの2ファイル | バイナリデータの結合、ZIPの構造、CRC-32（発展編） |
+
+短い関数から読みたい場合は、[quality.js](js/quality.js)や[format-file-size.js](js/utils/format-file-size.js)から始めることもできます。この2つはDOMを使わず、入力から結果を返す関数です。
+
+## ファイル構成
+
+```text
+.
+├── index.html                    # 画面・画像一覧のtemplate・moduleの入口
+├── styles.css                    # 変換画面のスタイル
+├── js/
+│   ├── main.js                   # 起動とイベントの接続
+│   ├── config.js                 # 枚数・容量・画素数の上限
+│   ├── state.js                  # 一覧データと一時URLの管理
+│   ├── file-validation.js        # 追加するファイルの検証
+│   ├── quality.js                # 低・中・高画質の説明
+│   ├── events/
+│   │   └── file-input-events.js  # 選択・ドラッグ＆ドロップ
+│   ├── controllers/              # 複数の機能を順番につないで処理を進める
+│   │   ├── file-controller.js    # 画像の追加・削除・設定変更
+│   │   ├── conversion-controller.js # 一括変換の進行
+│   │   └── download-controller.js   # 個別・ZIP保存の進行
+│   ├── images/
+│   │   ├── decode-image.js       # File / Blobを描画できる画像にする
+│   │   └── convert-image.js      # 縮小・背景合成・WebP生成
+│   ├── ui/
+│   │   ├── elements.js           # HTML要素とJSの名前の対応表
+│   │   ├── file-list.js          # サムネイル・ファイル情報の行
+│   │   └── page.js               # ボタン・集計・通知・進捗・画質説明
+│   ├── utils/
+│   │   ├── file-names.js         # 出力ファイル名の作成
+│   │   ├── format-file-size.js   # B / KB / MB表示
+│   │   └── download-file.js      # Blobのダウンロード
+│   └── zip/
+│       ├── create-zip.js         # ZIP全体の組み立て
+│       ├── zip-headers.js        # ZIP仕様に従うヘッダーの生成
+│       └── crc32.js              # データ破損を検出する検査値
+├── assets/                       # ロゴ・ファビコン・OGP画像
+├── privacy.html                  # 日英のプライバシーポリシー
+├── terms.html                    # 日英の利用条件
+├── licenses.html                 # 日英の権利・ライセンス表示
+├── legal.css                     # ポリシーページのスタイル
+├── LICENSE                       # ソースコード等の権利表示
+├── package.json                  # Node.jsでのES Modules指定（依存なし）
+└── .nojekyll                     # GitHub PagesでJekyll処理を無効にする
+```
+
+## モジュール同士の関係
+
+`main.js`は操作の接続、`controllers/`は処理の順序、`ui/`は表示を担当します。画像処理やZIP処理は、画面のボタンやファイル一覧を直接書き換えません。
+
+```mermaid
+flowchart TD
+  HTML["index.html"] --> Main["main.js：初期化・イベント登録"]
+  Main --> Events["events：ファイル選択・ドロップ"]
+  Main --> Controllers["controllers：追加・変換・保存の進行"]
+  Events --> Controllers
+  Controllers --> State["state：画像一覧・処理中フラグ"]
+  Controllers --> Images["images：デコード・WebP変換"]
+  Controllers --> Zip["zip：ZIP生成"]
+  Controllers --> UI["ui：データを画面へ反映"]
+  Controllers --> Download["utils/download-file：保存"]
+```
+
+これは主な呼び出し・更新の関係です。例えば`config.js`や容量表示用の関数など、共通の補助モジュールは省略しています。
+
+### ES Modulesの基本
+
+HTMLは入口のファイルだけを読み込みます。
+
+```html
+<script type="module" src="js/main.js"></script>
+```
+
+関数を別ファイルへ公開するときは`export`、利用するときは`import`を使います。
+
+```js
+// quality.js：他のファイルから使える関数として公開する
+export function getQualityDescription(qualityPercent) {
+  // 実際の実装は js/quality.js を参照
+}
+
+// ui/page.js：必要な名前を指定して読み込む
+import { getQualityDescription } from '../quality.js';
+```
+
+ブラウザが`import`をたどって必要なファイルを読み込みます。相対パスと`.js`の拡張子を指定することで、GitHub Pagesのリポジトリ配下でも動きます。モジュールは自動的にstrict modeで動き、同じモジュールは1回だけ評価されます。
+
+## 画像1枚のデータを追う
+
+[state.js](js/state.js)の`createImageEntry()`が、元ファイルと作業用データをまとめたオブジェクトを作ります。
+
+| プロパティ | 内容 |
+| --- | --- |
+| `originalFile` | 利用者が選択した元の`File`。変換で書き換えません |
+| `outputFileName` | 重複を避けたWebP保存名。例：`photo (2).webp` |
+| `originalPreviewUrl` | 追加直後から元画像を表示するための一時URL |
+| `convertedBlob` | 変換成功時に入るWebPのバイナリデータ。変換前は`null` |
+| `convertedPreviewUrl` | 変換結果を表示するための一時URL |
+| `outputWidth` / `outputHeight` | 変換結果の横幅・高さ |
+| `isConverting` / `errorMessage` | その画像の処理状態とエラー |
+| `previewFailed` | 元画像のプレビュー読み込みに失敗したか |
+| `rowElement` | その画像に対応する一覧の`li`要素 |
+
+`appState.imageEntries`は、このオブジェクトの配列です。`appState.isConverting`と`appState.isCreatingZip`は、アプリ全体が処理中かを表します。**画像ごとの状態と、一覧全体の状態は別です。**
+
+### 追加から変換まで
+
+1. `handleFileSelection()`または`handleFileDrop()`が`FileList`を受け取ります。
+2. `addImageFiles()`が検証し、`createImageEntry()`で管理データを作ります。
+3. `addImageRow()`がHTMLの`template`をコピーし、元画像のサムネイルを表示します。
+4. 変換ボタンで`convertPendingImages()`を呼び、未変換の画像だけを別配列へ取り出します。
+5. `convertImageToWebp()`がデコード・縮小・背景描画・WebP書き出しを行います。
+6. コントローラーが返されたBlobとサイズを管理データへ格納します。
+7. `renderImageRow()`と`renderPage()`が、変換状態・サムネイル・容量・ボタンを更新します。
+
+変換を開始した後に追加された画像は、次回の対象になります。1枚失敗しても`catch`でその画像のエラーを記録し、残りを処理します。
+
+### 設定を変えるとき・画像を削除するとき
+
+設定変更時は`resetConversionResult()`が**変換結果だけ**を破棄します。`originalPreviewUrl`を残すので、サムネイルが消えません。画像を一覧から削除するときは`disposeImageEntry()`が元画像用のURLも解放します。
+
+`URL.createObjectURL()`で作った一時URLは、不要になったら`URL.revokeObjectURL()`で解放します。URLを解放することと、端末の元ファイルを削除することは別です。
+
+### ZIPを保存するとき
+
+`downloadCompletedImagesAsZip()`は成功した画像を選び、`{ name, blob }`の配列に変換して`createZipArchive()`へ渡します。ZIPモジュールは画像一覧のDOMや管理データを知る必要がありません。
+
+ZIPは次の順に部品を並べます。
+
+```text
+[ローカルヘッダー + UTF-8ファイル名 + WebPデータ] × 枚数
+[中央ディレクトリ（ファイルの位置を記録する目次）]
+[目次終端ヘッダー]
+```
+
+WebPはすでに圧縮されているため、ZIPではSTORE（再圧縮しない）方式を使います。CRC-32はデータの破損を検出する検査値です。暗号化や安全性の保証ではありません。ヘッダー内の数字の位置はZIP形式の仕様に従い、[zip-headers.js](js/zip/zip-headers.js)にコメントを付けています。この部分は発展編として後から読めます。
+
+## このコードで使う主な用語
+
+| 用語 | このアプリでの使い方 |
+| --- | --- |
+| DOM | ボタン・画像一覧など、HTMLをJavaScriptから操作するための要素 |
+| `File` | 選択したファイル。名前・サイズ・MIMEタイプなどを持つ |
+| `Blob` | WebPやZIPの本体となるバイナリデータ |
+| Object URL | BlobやFileを画像・ダウンロードリンクから参照する一時URL |
+| Canvas | 縮小した画像を描画し、WebPとして書き出す作業領域 |
+| `Promise` / `await` | 画像の読み込みや書き出しの完了を待つ仕組み |
+| `try` / `catch` / `finally` | 失敗の扱いと、成功・失敗にかかわらず必要な後片付け |
+| `Uint8Array` / `DataView` | ZIPのようなバイト列を読み書きするための道具 |
+
+## 動作確認のポイント
+
+ローカルサーバーで、次の流れを確認できます。
+
+1. 複数画像を追加し、変換前からサムネイルが表示されること。
+2. 画質を39→40→79→80%へ変え、低・中・高画質の説明が切り替わること。
+3. 画像を変換し、個別保存とZIP保存ができること。
+4. 設定を変更すると変換結果がリセットされ、元画像のプレビューが残ること。
+5. 読み込めない画像があっても、他の画像を変換・保存できること。
+6. 個別削除・一括削除後に、同じ画像をもう一度追加できること。
+
+検証用のテスト・データ・生成メモは`.gitignore`の対象です。公開リポジトリにはアプリ本体とこのREADMEを含めます。
+
+## 画質・仕様・上限
+
+画質の表示区分は10〜39%が低画質、40〜79%が中画質、80〜100%が高画質です。数値はエンコーダーへ渡す品質指定で、保持される画質の割合ではありません。100%でも可逆圧縮は指定しません。
+
+- 元画像のメタデータ（EXIFなど）は引き継ぎません。色・輪郭・質感が変わる場合があります。
+- アニメーションは静止画になります。通常は先頭フレーム、一部のブラウザでは表示時点のフレームになります。
+- HEIC・HEIFは非対応です。入力形式の読み込み・WebP書き出しの可否はブラウザに依存します。
+- 入力は1枚50MB・一覧100枚・合計500MB・元画像4,000万画素まで、ZIP内の出力合計は500MBまでです。端末のメモリにより、それ以下でも失敗する場合があります。
+- 容量が必ず小さくなるわけではありません。元画像を保管し、結果を確認してください。
+- ページを閉じると作業結果が失われる場合があります。ZIP64には対応しません。
+
+上限は[config.js](js/config.js)、画質の説明は[quality.js](js/quality.js)で確認できます。
 
 ## GitHub Pagesで公開する
 
-1. GitHubでリポジトリを作成し、このフォルダのファイルをアップロードします。`.gitignore` の対象となる制作・検証用ファイルは除外します。
-2. リポジトリの **Settings → Pages** を開きます。
-3. **Build and deployment → Source** で **Deploy from a branch** を選択します。
-4. **Branch** に `main`、フォルダに `/ (root)` を指定して保存します。
-5. デプロイ後に表示されるURLを開きます。
+1. このフォルダの追跡対象ファイルをリポジトリへプッシュします。
+2. **Settings → Pages → Build and deployment → Source**で**Deploy from a branch**を選びます。
+3. ブランチを`main`、フォルダを`/ (root)`にして保存します。
 
-相対パスを使用しているため、`https://ユーザー名.github.io/リポジトリ名/` 配下で動きます。`.nojekyll` によりJekyllによる処理を無効にしています。公開先に合わせてリポジトリ名を固定する必要はありません。
+ビルドは不要です。`js/`フォルダもすべて公開対象に含めてください。OGP・Twitter Card・canonicalは`https://syo-m.github.io/WebPImageConverter/`を指定しているため、カスタムドメインに変更した場合は`index.html`の絶対URLを更新します。
 
-## ファイル
+GitHubはルートの`README.md`をリポジトリのトップページに表示します。このREADMEは`.gitignore`で除外していません。サイトにもソースコードを開くリンクがあります。
 
-| ファイル | 役割 |
-| --- | --- |
-| `index.html` | サイト構造・UI |
-| `styles.css` | レスポンシブな独自デザイン |
-| `app.js` | ファイル管理、画像変換、保存 |
-| `zip.js` | UTF-8対応ZIP作成・CRC-32 |
-| `assets/favicon.svg` | サイトアイコン |
-| `privacy.html` | 日英のプライバシーポリシー |
-| `terms.html` | 日英の利用条件 |
-| `licenses.html` / `LICENSE` | サービス利用とコード再利用の権利表示 |
-| `legal.css` | ポリシーページのデザイン |
+## ポリシー・権利表示
 
-## 検証
+[プライバシーポリシー](privacy.html) · [利用条件](terms.html) · [ライセンス表示](licenses.html) · [LICENSE](LICENSE)
 
-```sh
-node --check app.js
-node --check zip.js
-node --test tests/zip.test.cjs
-```
+運営者はsyo motoyama、公開連絡先はsyoeureka@gmail.comです。GitHub PagesのIP記録と、メール問い合わせの取り扱いはプライバシーポリシーに記載しています。
 
-ZIPのCRC・日本語名・内容はNode.jsテストとPython標準ライブラリで検証できます。ブラウザでの画像形式ごとの変換や保存はローカルプレビューで確認してください。
+コードはGitHubで閲覧できますが、MIT等のOSS再利用許諾は付与していません。コード等の取り扱いは`LICENSE`を確認してください。画像変換サービスは個人・業務とも無料で利用できます。
 
-画像変換とZIP作成はブラウザ標準APIおよび独自コードで実装しており、第三者のJavaScriptライブラリは同梱していません。
+ロゴ・OGPはImagegenで生成し、ファビコンは生成ロゴから書き出しています。第三者のJavaScript・WebAssembly・フォントは同梱していません。広告・解析・画像送信などの機能を追加する場合は、実際の取り扱いに合わせてポリシーも更新してください。
 
+## 参考資料
 
-## ポリシー・ライセンス
-
-運営者名は `syo motoyama`、公開連絡先は `syoeureka@gmail.com` として、日英のポリシーページを用意しています。メールアドレスはサイト上に公開されます。問い合わせへの連絡手段であり、画像送信は変換機能に必要ありません。
-
-- `privacy.html`：端末内処理、永続保存なし、広告・解析なし、GitHub PagesのIP記録、Gmailへの問い合わせと保管、利用者の権利。
-- `terms.html`：無料の個人・業務利用、画像の権利、変換の制限、法令上認められる範囲での保証・責任の説明。
-- `licenses.html` / `LICENSE`：第三者ライブラリの同梱なし。サイトの利用許可とソースコードの再配布許可を区別しています。MIT等のOSSライセンスは新たに付与していません。
-
-これらのページと `LICENSE` は公開・追跡対象です。連絡先や配信元を変更した場合、広告・解析・フォーム・画像送信・新しい依存ライブラリを追加した場合は、実際の取り扱いに合わせて各ページを更新してください。制定・最終更新日は2026年10月27日です。これらの文書は、すべての法域への適合を保証するものではありません。
-
-記載内容の確認に用いた公式資料：
-- https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection
-- https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement
-- https://www.ppc.go.jp/personalinfo/legal/guidelines_tsusoku/
-- https://policies.google.com/privacy
-- https://choosealicense.com/no-permission/
+- [MDN：JavaScript Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+- [MDN：CanvasのtoBlob()](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob)
+- [GitHub Pages：データの収集](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)

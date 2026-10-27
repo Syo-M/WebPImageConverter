@@ -5,11 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="JPEG・PNG・GIFなどをWebPに一括変換。画像はブラウザ内で処理。品質・サイズを選んで、個別またはZIPでダウンロードできます。">
   <meta name="theme-color" content="#7360d8">
-  <title>こかる — 画像を、軽やかに。WebP一括変換</title>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <title>画像をWebPに変換 | JPEG・PNGの一括変換ツール</title>
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="canonical" href="https://syo-m.github.io/WebPImageConverter/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:site_name" content="画像をWebPに変換">
+  <meta property="og:title" content="画像をWebPに変換">
+  <meta property="og:description" content="JPEG・PNGなどの画像をブラウザ内でWebPに一括変換。画質・サイズの調整、個別ダウンロード、ZIP保存に対応。">
+  <meta property="og:url" content="https://syo-m.github.io/WebPImageConverter/">
+  <meta property="og:image" content="https://syo-m.github.io/WebPImageConverter/assets/ogp.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="画像をWebPに変換 — ブラウザで完結する画像変換ツール">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="画像をWebPに変換">
+  <meta name="twitter:description" content="JPEG・PNGなどをWebPに一括変換。画質・サイズの調整とZIP保存に対応。">
+  <meta name="twitter:image" content="https://syo-m.github.io/WebPImageConverter/assets/ogp.png">
   <link rel="stylesheet" href="styles.css">
-  <script src="zip.js" defer></script>
-  <script src="app.js" defer></script>
+  <!-- moduleを入口にすると、import先もブラウザが読み込みます。ビルドは不要です。 -->
+  <script type="module" src="js/main.js"></script>
 </head>
 <body>
 <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -21,51 +38,50 @@
   <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 </defs></svg>
 <header class="header wrap">
-  <a class="brand" href="./" aria-label="こかる ホーム"><span class="brand-mark"><svg><use href="#icon-image"/></svg><i>✦</i></span><span>こかる<span class="brand-dot">.</span></span></a>
-  <nav aria-label="メインナビゲーション"><a href="#how-to">使い方</a><a href="#faq">よくある質問 <span>↗</span></a></nav>
-  <span class="header-note"><span></span> インストール不要・無料</span>
+  <a class="brand" href="./" aria-label="画像をWebPに変換 ホーム"><img class="brand-logo" src="assets/logo-mark.png" width="36" height="36" alt=""><span>画像をWebPに変換</span></a>
+  <nav aria-label="メインナビゲーション"><a href="#how-to">使い方</a><a href="#faq">よくある質問</a><a href="https://github.com/Syo-M/WebPImageConverter" target="_blank" rel="noopener noreferrer" aria-label="GitHubでソースコードを見る（別タブ）">ソースコード ↗</a></nav>
 </header>
 <main class="wrap">
   <section class="hero" aria-labelledby="hero-title">
-    <div class="eyebrow"><span></span> LITTLE FILES, BIG POSSIBILITIES</div>
-    <h1 id="hero-title">画像を、<span>軽やかに。</span><svg viewBox="0 0 50 50" aria-hidden="true"><path d="M25 2v46M2 25h46M9 9l32 32M9 41 41 9"/></svg></h1>
-    <p>いつもの画像を、使いやすいWebPへ。<br class="mobile-break">まとめて変換、さっとダウンロード。</p>
-    <div class="hero-tags"><span>JPEG</span><span>PNG</span><span>GIF</span><span>AVIF</span><span class="format-arrow">→</span><span class="webp-tag">WebP <span>✦</span></span></div>
+    <div class="eyebrow">WEBP IMAGE CONVERTER</div>
+    <h1 id="hero-title">画像をWebPに変換</h1>
+    <p>JPEG・PNGなどの画像を一括変換。<br class="mobile-break">画質・サイズを指定して、Web制作に適した形式で保存できます。</p>
+    <div class="hero-tags"><span>JPEG</span><span>PNG</span><span>GIF</span><span>AVIF</span><span class="format-arrow">→</span><span class="webp-tag">WebP</span></div>
   </section>
   <section class="workspace" aria-label="WebP変換ツール">
     <aside class="settings">
       <div class="section-label"><span class="step">01</span><h2>変換の設定</h2><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg></div>
-      <div class="setting-group"><div class="label-line"><label for="quality">画質</label><output id="quality-value" for="quality">80<span>%</span></output></div><input id="quality" type="range" min="10" max="100" step="1" value="80"><div class="range-labels"><span>ファイルを小さく</span><span>きれいに</span></div><p class="field-help">迷ったら80%。きれいさと軽さの<br>ちょうどいいバランスです。</p></div>
+      <div class="setting-group"><div class="label-line"><label for="quality">画質</label><output id="quality-value" for="quality">80<span>%</span></output></div><input id="quality" type="range" min="10" max="100" step="1" value="80" aria-describedby="quality-description quality-note"><div class="range-labels"><span>圧縮率を優先</span><span>画質を優先</span></div><div class="quality-info" aria-live="polite" aria-atomic="true"><div class="quality-heading"><strong id="quality-level" data-level="high">高画質</strong><span id="quality-range">80–100%</span></div><p id="quality-description">細部の再現を優先します。元画像との差は比較的小さくなりますが、質感や輪郭に変化が生じる場合があります。</p></div><p class="field-help" id="quality-note">数値はエンコード品質の指定値です。劣化の程度は画像とブラウザにより異なり、100%でも可逆圧縮にはなりません。</p></div>
       <div class="setting-group"><label for="max-size">画像のサイズ</label><div class="select-wrap"><select id="max-size"><option value="0">元のサイズを保持</option><option value="2560">長辺を最大 2,560 pxに</option><option value="1920">長辺を最大 1,920 pxに</option><option value="1280">長辺を最大 1,280 pxに</option><option value="800">長辺を最大 800 pxに</option></select></div><p class="field-help">縦横比を保って縮小します。</p></div>
-      <div class="setting-group background-setting"><label class="check-label"><input id="white-background" type="checkbox"><span>背景を白にする</span></label><p class="field-help">オフの場合、透明な背景を保ちます。</p></div>
-      <div class="private-card"><svg><use href="#icon-shield"/></svg><div><strong>あなたの画像は、あなたの端末に。</strong><p>画像はブラウザ内だけで処理。<br>サーバーへ送信されません。</p></div></div>
+      <div class="setting-group background-setting"><label class="check-label"><input id="white-background" type="checkbox"><span>背景を白にする</span></label><p class="field-help">無効の場合は透明背景を保持します。</p></div>
+      <div class="private-card"><svg><use href="#icon-shield"/></svg><div><strong>端末内で画像を処理</strong><p>画像は外部サーバーへ送信されません。</p></div></div>
     </aside>
     <div class="converter">
-      <div class="section-label"><span class="step">02</span><h2>画像を追加</h2><span class="section-meta">複数選択 OK</span></div>
+      <div class="section-label"><span class="step">02</span><h2>画像を追加</h2><span class="section-meta">複数ファイル対応</span></div>
       <div id="drop-zone" class="drop-zone">
-        <div class="upload-art" aria-hidden="true"><span class="art-card art-back">PNG</span><span class="art-card art-front"><svg><use href="#icon-image"/></svg><span>WebP</span></span><span class="art-spark">✦</span><span class="art-small">+</span></div>
-        <h3>ここに画像をドロップ</h3><p>異なる形式も、まとめてどうぞ。</p>
-        <button id="choose-files" class="button primary" type="button"><svg><use href="#icon-plus"/></svg>画像を選ぶ</button>
+        <div class="upload-symbol" aria-hidden="true"><svg><use href="#icon-image"/></svg><svg><use href="#icon-arrow"/></svg><span>WebP</span></div>
+        <h3>画像をドラッグ＆ドロップ</h3><p>異なる形式の画像をまとめて追加できます。</p>
+        <button id="choose-files" class="button primary" type="button"><svg><use href="#icon-plus"/></svg>ファイルを選択</button>
         <input id="file-input" type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp,image/avif,.jpg,.jpeg,.png,.gif,.webp,.bmp,.avif" multiple hidden>
         <span class="upload-note">JPEG / PNG / GIF / WebP / BMP / AVIF</span>
         <span class="upload-limit">1枚50MBまで・一度に100枚まで</span>
       </div>
-      <div class="conversion-bar"><span><span class="tiny-spark">✦</span> 設定を選んで、ワンクリック。</span><button id="convert-all" class="button dark" type="button" disabled>WebPに変換<svg><use href="#icon-arrow"/></svg></button></div>
+      <div class="conversion-bar"><span>設定を確認して変換を実行してください。</span><button id="convert-all" class="button dark" type="button" disabled><span class="button-label">WebPに変換</span><svg><use href="#icon-arrow"/></svg></button></div>
       <p class="tool-note">GIF・アニメーション画像は先頭の1フレームを変換します。</p>
     </div>
   </section>
   <section id="results" class="results" aria-labelledby="results-title" hidden>
-    <div class="results-header"><div><div class="eyebrow">YOUR LIGHTER IMAGES</div><h2 id="results-title">画像一覧 <span id="file-count">0枚</span></h2></div><div class="result-actions"><button id="clear-all" class="text-button" type="button">すべて削除</button><button id="download-zip" class="button primary" type="button" disabled><svg><use href="#icon-download"/></svg>まとめてZIP保存</button></div></div>
+    <div class="results-header"><div><h2 id="results-title">画像一覧 <span id="file-count">0枚</span></h2></div><div class="result-actions"><button id="clear-all" class="text-button" type="button">すべて削除</button><button id="download-zip" class="button primary" type="button" disabled><svg><use href="#icon-download"/></svg><span class="button-label">まとめてZIP保存</span></button></div></div>
     <div id="summary" class="summary" hidden></div>
     <div class="progress-area" id="progress-area" hidden><div class="progress-label"><span id="progress-text"></span><span id="progress-count"></span></div><progress id="progress" value="0" max="1"></progress></div>
     <ul id="file-list" class="file-list"></ul>
     <p class="results-footnote">設定を変えたら再変換できます。元のファイルは変更されません。</p>
   </section>
   <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
-  <section id="how-to" class="how-to" aria-labelledby="how-title"><div class="section-intro"><div class="eyebrow">JUST THREE STEPS</div><h2 id="how-title">軽くするって、こんなに簡単。</h2></div><div class="steps-grid"><article><span class="how-number">01 /</span><h3>画像を入れる</h3><p>写真もイラストも、ドラッグ＆ドロップ。<br>スマホからはファイルを選択できます。</p></article><article><span class="how-number">02 /</span><h3>好みの軽さに変換</h3><p>画質やサイズを選んで変換ボタンを。<br>1枚ずつ順番に処理します。</p></article><article><span class="how-number">03 /</span><h3>まとめて持ち帰る</h3><p>1枚だけでも、ZIPでまとめても。<br>軽くなった画像をすぐ使えます。</p></article></div></section>
-  <section id="faq" class="faq" aria-labelledby="faq-title"><div><div class="eyebrow">GOOD TO KNOW</div><h2 id="faq-title">ちょっと気になること。</h2></div><div class="faq-items"><details><summary>WebPって、どんな形式？</summary><p>WebPは写真やイラストのファイルサイズを抑えられる画像形式です。透明な背景にも対応しています。画像や画質の設定によっては、変換後にサイズが大きくなることもあります。</p></details><details><summary>画像はどこかに送られますか？</summary><p>画像の読み込み・変換・ZIPの作成は、すべてお使いのブラウザ内で行います。画像をサーバーへ送信しません。ページを閉じると、このツール内の画像データは失われます。</p></details><details><summary>どんな画像形式に対応していますか？</summary><p>JPEG・PNG・GIF・WebP・BMP・AVIFに対応しています。お使いのブラウザで読み込める形式が対象です。読み込めない画像はJPEGやPNGで書き出してからお試しください。</p></details><details><summary>変換するときに変わるものは？</summary><p>画質設定に応じて非可逆圧縮を行います。アニメーションは静止画になり、EXIFなどのメタデータは引き継ぎません。色の見え方が元画像と異なる場合があります。大きな画像や大量の変換には時間がかかるため、タブを開いたままお待ちください。</p></details></div></section>
+  <section id="how-to" class="how-to" aria-labelledby="how-title"><div class="section-intro"><h2 id="how-title">操作手順</h2></div><div class="steps-grid"><article><span class="how-number">01 /</span><h3>ファイルを追加</h3><p>ファイル選択またはドラッグ＆ドロップで画像を追加し、サムネイルとファイル名を確認します。</p></article><article><span class="how-number">02 /</span><h3>変換設定を指定</h3><p>画質・出力サイズ・背景を設定して変換します。処理後にファイル容量を比較できます。</p></article><article><span class="how-number">03 /</span><h3>変換結果を保存</h3><p>個別にダウンロードするか、変換済みの画像をZIPにまとめて保存します。</p></article></div></section>
+  <section id="faq" class="faq" aria-labelledby="faq-title"><div><h2 id="faq-title">よくある質問</h2></div><div class="faq-items"><details><summary>WebPはどのような形式ですか？</summary><p>WebPは写真やイラストのファイルサイズを抑えられる画像形式です。透明な背景にも対応しています。画像や画質の設定によっては、変換後にサイズが大きくなることもあります。</p></details><details><summary>画像はサーバーに送信されますか？</summary><p>画像の読み込み・変換・ZIPの作成は、すべてお使いのブラウザ内で行います。画像をサーバーへ送信しません。ページを閉じると、このツール内の画像データは失われます。</p></details><details><summary>対応する入力形式を教えてください。</summary><p>JPEG・PNG・GIF・WebP・BMP・AVIFに対応しています。お使いのブラウザで読み込める形式が対象です。読み込めない画像はJPEGやPNGで書き出してからお試しください。</p></details><details><summary>変換に伴う変更点を教えてください。</summary><p>画質設定に応じて非可逆圧縮を行います。アニメーションは静止画になり、EXIFなどのメタデータは引き継ぎません。色の見え方が元画像と異なる場合があります。大きな画像や大量の変換には時間がかかるため、タブを開いたままお待ちください。</p></details></div></section>
 </main>
-<footer class="footer wrap"><a class="brand small" href="./">こかる<span class="brand-dot">.</span></a><span>小さくして、可能性を広げよう。</span><nav class="footer-links" aria-label="サイト情報"><a href="privacy.html">プライバシーポリシー</a><a href="terms.html">利用条件</a><a href="licenses.html">ライセンス</a></nav></footer>
-<template id="file-template"><li class="file-row"><div class="thumbnail"><svg><use href="#icon-image"/></svg><img alt="" hidden></div><div class="file-info"><strong class="file-name"></strong><span class="file-detail"></span><span class="file-error"></span></div><span class="file-status"></span><button class="download-one icon-button" type="button" aria-label="WebPを保存" title="WebPを保存" disabled><svg><use href="#icon-download"/></svg></button><button class="remove-one icon-button" type="button" aria-label="画像を削除" title="画像を削除"><svg><use href="#icon-close"/></svg></button></li></template>
+<footer class="footer wrap"><a class="brand small" href="./">画像をWebPに変換</a><nav class="footer-links" aria-label="サイト情報"><a href="https://github.com/Syo-M/WebPImageConverter" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="privacy.html">プライバシーポリシー</a><a href="terms.html">利用条件</a><a href="licenses.html">ライセンス</a></nav></footer>
+<template id="file-template"><li class="file-row"><div class="thumbnail"><svg><use href="#icon-image"/></svg><img alt="" loading="lazy" decoding="async" hidden><span class="thumbnail-fallback" hidden>プレビュー<br>不可</span></div><div class="file-info"><strong class="file-name"></strong><span class="file-detail"></span><span class="file-error"></span></div><span class="file-status"></span><button class="download-one icon-button" type="button" aria-label="WebPを保存" title="WebPを保存" disabled><svg><use href="#icon-download"/></svg></button><button class="remove-one icon-button" type="button" aria-label="画像を削除" title="画像を削除"><svg><use href="#icon-close"/></svg></button></li></template>
 </body>
 </html>
