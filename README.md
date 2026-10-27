@@ -4,7 +4,20 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 
 [GitHubのソースコード](https://github.com/Syo-M/WebPImageConverter) · [サイトを開く](https://syo-m.github.io/WebPImageConverter/) · [リリース](https://github.com/Syo-M/WebPImageConverter/releases)
 
-## 最新版：v1.1.1
+## 最新版：v1.2.0
+
+ライト／ダークの表示切り替えに対応しました。ヘッダーの月／太陽ボタンで変更できます。
+
+- 保存した選択がなければ、端末・ブラウザの配色設定に自動で合わせます
+- ユーザーが切り替えると、その選択をブラウザに保存し、次回から優先して表示します
+- 変換画面・操作ガイド・FAQ・ガラス調モーダル・ポリシーページも同じ配色で表示します
+- 保存するのは配色の選択だけです。画像や変換結果は永続保存しません
+
+保存内容は日英のプライバシーポリシーにも記載しています。画像変換・保存の仕様に変更はありません。
+
+詳細は[v1.2.0のRelease](https://github.com/Syo-M/WebPImageConverter/releases/tag/v1.2.0)で確認できます。
+
+### v1.1.1での主な変更
 
 出力サイズモーダルを半透明のガラス調に変更しました。背後の色や形を柔らかくぼかし、縁の光沢と影で奥行きを付けています。選択カード・閉じるボタン・カスタム入力欄も同じ質感に統一しました。
 
@@ -42,6 +55,7 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 - ファイル選択・ドラッグ＆ドロップ、追加直後のサムネイル表示
 - 10〜100%の画質指定、縦横比を保つ縮小、透明背景の保持・白背景への合成
 - モーダルで出力サイズを選択（元のサイズ・プリセット・カスタム指定）
+- ライト／ダークの切り替え、端末設定への初回追従、表示テーマの保存
 - 変換前後の容量・削減率・出力サイズの確認
 - 個別ダウンロード、成功した画像をまとめたZIP保存
 - 同名ファイルの連番化、個別・一括削除、設定変更後の再変換
@@ -65,6 +79,7 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 | 10 | [size-dialog.js](js/ui/size-dialog.js)、[workflow-guide.js](js/ui/workflow-guide.js)、[faq.js](js/ui/faq.js) | モーダルの一時状態、操作例の再生、絞り込み、アニメーションの中断 |
 | 11 | [smooth-scroll.js](js/motion/smooth-scroll.js)、[scroll-spring.js](js/motion/scroll-spring.js)、[anchor-navigation.js](js/motion/anchor-navigation.js) | 入力と描画を分けること、位置・速度・経過時間、ページ内移動 |
 | 12 | [file-depth.js](js/motion/file-depth.js)、[guide-depth.js](js/motion/guide-depth.js) | CSS変数、ポインター追従、IntersectionObserver |
+| 13 | [theme.js](js/theme.js) | 初回描画前の配色、端末設定、localStorage、ページ間の共有 |
 
 短い関数から読みたい場合は、[quality.js](js/quality.js)や[format-file-size.js](js/utils/format-file-size.js)から始めることもできます。この2つはDOMを使わず、入力から結果を返す関数です。
 
@@ -75,8 +90,10 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 ├── index.html                    # 画面・画像一覧のtemplate・moduleの入口
 ├── styles.css                    # 変換画面のスタイル
 ├── guide.css                     # 操作手順・FAQのレイアウトとアニメーション
+├── theme.css                     # 配色・切替ボタン・ダークモードの各画面
 ├── js/
 │   ├── main.js                   # 起動とイベントの接続
+│   ├── theme.js                  # 初回描画前の配色・テーマ切替と保存
 │   ├── config.js                 # 枚数・容量・画素数の上限
 │   ├── state.js                  # 一覧データと一時URLの管理
 │   ├── file-validation.js        # 追加するファイルの検証
@@ -129,6 +146,8 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 ```mermaid
 flowchart TD
   HTML["index.html"] --> Main["main.js：初期化・イベント登録"]
+  HTML --> Theme["theme.js：初回描画前の配色と切替"]
+  Theme --> ThemeCSS["data-themeとtheme.css"]
   Main --> Events["events：ファイル選択・ドロップ"]
   Main --> Interactions["ui：サイズ選択・操作ガイド・FAQ"]
   Main --> Motion["motion：3D・スクロール・ページ内移動"]
@@ -176,7 +195,7 @@ flowchart TD
 
 ### ES Modulesの基本
 
-HTMLは入口のファイルだけを読み込みます。
+画像変換の処理は、HTMLからモジュールの入口だけを読み込みます。配色用の`theme.js`は、初回描画前に実行する別の入口です。
 
 ```html
 <script type="module" src="js/main.js"></script>
@@ -195,6 +214,14 @@ import { getQualityDescription } from '../quality.js';
 ```
 
 ブラウザが`import`をたどって必要なファイルを読み込みます。相対パスと`.js`の拡張子を指定することで、GitHub Pagesのリポジトリ配下でも動きます。モジュールは自動的にstrict modeで動き、同じモジュールは1回だけ評価されます。
+
+## 表示テーマ
+
+[theme.js](js/theme.js)を全ページの`head`から通常のスクリプトとして読み込み、CSSの描画前に`data-theme`を決めます。変換処理のES Modulesとは独立した小さな入口で、即時実行関数の中に変数を閉じ込めています。保存した設定と違う配色が一瞬表示されることを防ぐための構成です。
+
+保存した選択がなければ`prefers-color-scheme`で端末設定を読み取り、端末側の変更にも追従します。ヘッダーで切り替えると`webp-color-theme`というキーへ`light`または`dark`だけを保存し、次回やポリシーページでも同じ配色を使います。別タブでの切り替えは`storage`イベントで反映します。保存が禁止されていても、その場の切り替えは動作します。
+
+[theme.css](theme.css)は変換画面・3D表現・FAQ・ガラス調モーダル・ポリシーの配色をそろえます。画像プレビューの画素や変換結果は変更しません。保存する表示設定についてはプライバシーポリシーに記載しています。
 
 ## サイズ選択と画面の動き
 

@@ -57,3 +57,7 @@ OpenAIの利用規約・Services Agreementでは、OpenAIと利用者の間の�
 
 - [個人情報保護委員会：法第32条・本人の知り得る状態](https://www.ppc.go.jp/personalinfo/legal/guidelines_tsusoku/)
 - [個人情報保護委員会：請求の手続と問い合わせ窓口](https://www.ppc.go.jp/all_faq_index/faq1-q9-1/)
+
+## ダークモード追加時の保存処理の補足
+
+上記の保存処理の確認はv1.0.1時点の記録です。その後のダークモード追加では、利用者が選んだ表示テーマ（`light` / `dark`）だけを、ブラウザのlocalStorageの`webp-color-theme`キーに保存します。画像・ファイル名・変換結果は保存せず、テーマ設定を外部へ送信する処理もありません。この変更は日英のプライバシーポリシーに追記しています。

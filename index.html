@@ -24,10 +24,12 @@
   <meta name="twitter:title" content="画像をWebPに変換">
   <meta name="twitter:description" content="JPEG・PNGなどをWebPに一括変換。画質・サイズの調整とZIP保存に対応。">
   <meta name="twitter:image" content="https://syo-m.github.io/WebPImageConverter/assets/ogp.png">
+  <script src="js/theme.js"></script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="guide.css">
   <!-- moduleを入口にすると、import先もブラウザが読み込みます。ビルドは不要です。 -->
   <script type="module" src="js/main.js"></script>
+  <link rel="stylesheet" href="theme.css">
 </head>
 <body>
 <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -47,7 +49,10 @@
 <header class="header wrap">
   <a class="brand" href="./" aria-label="画像をWebPに変換 ホーム"><img class="brand-logo" src="assets/logo-mark.png" width="32" height="32" alt=""><h1>画像をWebPに変換</h1></a>
   <nav aria-label="メインナビゲーション"><a href="#how-to">使い方</a><a href="#faq">よくある質問</a><a href="https://github.com/Syo-M/WebPImageConverter" target="_blank" rel="noopener noreferrer">ソースコード ↗</a></nav>
-</header>
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="ダークモードに切り替える" hidden>
+  <svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.7 13.2A8.7 8.7 0 0 1 10.8 3.3 8.8 8.8 0 1 0 20.7 13.2Z"/></svg>
+  <svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+</button></header>
 <main class="wrap">
   <section class="workspace" aria-label="WebP変換ツール">
     <section id="drop-zone" class="drop-zone panel" aria-labelledby="upload-title">

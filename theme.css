@@ -1,0 +1,102 @@
+/* 配色をdata-themeに集約。モード切替は画面の色だけに適用し、元画像を加工しません。 */
+:root {color-scheme:light;--lavender:var(--tint)}
+.theme-toggle {display:inline-grid;place-items:center;flex-shrink:0;width:38px;height:38px;padding:9px;border:1px solid var(--line);border-radius:12px;color:var(--purple);background:var(--white);box-shadow:var(--shadow);transition:background .2s,border-color .2s}
+.theme-toggle:hover {background:var(--tint);border-color:var(--purple)}
+.theme-toggle svg {width:18px;height:18px}
+.theme-sun {display:none}
+:root[data-theme=dark] {
+  color-scheme:dark;
+  --ink:#eeeaf6;--muted:#b6afc4;--purple:#bfa5fa;--purple-dark:#67489f;
+  --tint:#342b49;--line:#3f384e;--paper:#14151d;--white:#22232f;
+  --green:#a0d8b6;--shadow:0 8px 26px #00000024;
+}
+:root[data-theme=dark] .theme-sun {display:block}
+:root[data-theme=dark] .theme-moon {display:none}
+:root[data-theme=dark] body {background:radial-gradient(ellipse at 85% 0,#3f2e6159,transparent 45%)}
+:root[data-theme=dark] .brand-logo {filter:brightness(1.5) saturate(.9)}
+:root[data-theme=dark] .primary {background:#7958b8;color:#fff;box-shadow:0 5px 17px #0003}
+:root[data-theme=dark] .primary:hover:not(:disabled) {background:#8966c6}
+:root[data-theme=dark] .secondary:hover:not(:disabled) {background:#2d293c;border-color:#75628e}
+:root[data-theme=dark] .drop-zone::before {background:radial-gradient(ellipse at 85% 25%,#563c8894,transparent 66%),radial-gradient(ellipse at 5% 100%,#26584670,transparent 65%)}
+:root[data-theme=dark] .drop-zone.dragging {border-color:var(--purple);box-shadow:inset 0 0 0 2px #b397e0,0 0 30px #9672cf24}
+:root[data-theme=dark] .art-file {border-color:#635477;background:#2b2939;box-shadow:1px 1px #453950,2px 2px #453950,3px 3px #453950,4px 4px #453950,6px 8px #312538,13px 24px 25px #0004}
+:root[data-theme=dark] .art-file.back {color:#bbc8c0;background:linear-gradient(135deg,#2a3035,#243c32)}
+:root[data-theme=dark] .art-file.middle {color:#c4bad3}
+:root[data-theme=dark] .art-file.front {border-color:#846ba6;background:radial-gradient(ellipse at var(--light-x,25%) var(--light-y,20%),#4b3a62,#2c253d 65%)}
+:root[data-theme=dark] .art-file.front::before {border-color:#d2bbff29}
+:root[data-theme=dark] .art-file.front::after {background:linear-gradient(120deg,transparent 28%,#e2d4ff15 45%,transparent 63%)}
+:root[data-theme=dark] .art-shadow {background:radial-gradient(ellipse,#0007,transparent 70%)}
+:root[data-theme=dark] .size-button {border-color:#75618f;background:linear-gradient(#30303e,#272433);box-shadow:inset 0 1px #ffffff0d,0 2px 4px #0002}
+:root[data-theme=dark] .select-chevron {border-color:#5c496f}
+:root[data-theme=dark] .thumbnail {background:repeating-conic-gradient(#353541 0 25%,#252631 0 50%) 0 0/12px 12px}
+:root[data-theme=dark] .output {background:linear-gradient(150deg,#252432,#2e263e)}
+:root[data-theme=dark] .file-error,:root[data-theme=dark] .file-status.error,:root[data-theme=dark] .size-error {color:#ffb7b0}
+:root[data-theme=dark] .notice {background:#30243f;border-color:#645076;color:#e2c9f5}
+/* ガイドの立体物にも暗い面・明るい縁を用意し、同じ材質として見せます。 */
+:root[data-theme=dark] .workflow-card {--scene-tint:#413253;background:linear-gradient(155deg,#262430,#201f2c);box-shadow:0 8px 28px #0002}
+:root[data-theme=dark] .workflow-card[data-step=settings] {--scene-tint:#284238}
+:root[data-theme=dark] .workflow-card[data-step=save] {--scene-tint:#3c2b57}
+:root[data-theme=dark] .workflow-card-top {color:#c1afce}
+:root[data-theme=dark] .guide-heading>p>span {color:var(--muted)}
+:root[data-theme=dark] .guide-play>svg {border-color:#5b456d}
+:root[data-theme=dark] .mini-drop {border-color:#8c789f;background:#272232b5;box-shadow:0 12px 18px #0002}
+:root[data-theme=dark] .mini-drop svg {color:#c1aacf}
+:root[data-theme=dark] .demo-file,:root[data-theme=dark] .export-sheet,:root[data-theme=dark] .answer-slab {border-color:#635273;background:linear-gradient(150deg,#3a3049,#2a2537);box-shadow:2px 3px #483653,7px 13px 15px #0003}
+:root[data-theme=dark] .demo-png,:root[data-theme=dark] .slab-back {background:linear-gradient(150deg,#303b37,#21372c)}
+:root[data-theme=dark] .import-result>span,:root[data-theme=dark] .export-check {background:#254533;color:#a8ddbc}
+:root[data-theme=dark] .export-check {border-color:#2c253d}
+:root[data-theme=dark] .demo-settings {border-color:#476052;background:linear-gradient(140deg,#2a3630,#222f29);box-shadow:3px 4px #1b2721,10px 19px 22px #0003}
+:root[data-theme=dark] .demo-setting-label {color:#c1d7c9}
+:root[data-theme=dark] .demo-size-row {border-color:#405045}
+:root[data-theme=dark] .faq-intro {background:radial-gradient(ellipse at 15% 65%,#2a574859,transparent 60%),linear-gradient(145deg,#24262f,#30263f)}
+:root[data-theme=dark] .slab-middle {background:#332d40}
+:root[data-theme=dark] .slab-front {background:linear-gradient(140deg,#453552,#2d253e)}
+:root[data-theme=dark] .sculpture-orbit {background:linear-gradient(135deg,#b6a1d1,#5c4479);box-shadow:2px 5px 7px #0003}
+:root[data-theme=dark] .orbit-two {background:linear-gradient(135deg,#aac6b9,#486858)}
+:root[data-theme=dark] .faq-assurance {color:#aed0bc;border-color:var(--line)}
+:root[data-theme=dark] .faq-filters {background:#1d1b27;border-color:var(--line)}
+:root[data-theme=dark] .faq-filters button[aria-pressed=true] {background:#3c2f4e}
+:root[data-theme=dark] .faq-items details[open] {border-color:#806195;background:linear-gradient(120deg,#282332,#25222e)}
+:root[data-theme=dark] .faq-items [data-category=data] .faq-icon,:root[data-theme=dark] .answer-tag.mint {background:#293d31;color:#b4d9bf}
+/* 暗いガラスも透け感を維持し、文字の後ろには十分な濃さを残します。 */
+:root[data-theme=dark] .size-dialog {background:#272331;border-color:#5b4c6b;box-shadow:0 30px 80px #0006,inset 0 1px #ffffff24}
+:root[data-theme=dark] .size-dialog::backdrop {background:#08071059}
+:root[data-theme=dark] .size-dialog .size-choice {background:#2d283b;border-color:#51415f;box-shadow:inset 0 1px #ffffff0a}
+:root[data-theme=dark] .size-dialog .size-choice:hover {border-color:#a58ac3;background:#3c304e}
+:root[data-theme=dark] .size-dialog .size-choice:has(input:checked) {background:#443255;border-color:var(--purple);box-shadow:inset 0 0 0 1px var(--purple)}
+:root[data-theme=dark] .size-dialog .dialog-heading .icon-button,:root[data-theme=dark] .size-dialog .custom-size-field input {background:#352d43;border-color:#645275;box-shadow:inset 0 1px #ffffff14}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  :root[data-theme=dark] .size-dialog {background:linear-gradient(135deg,#44394dc9,#24212b99 42%,#47305b99);border-color:#d4b8ed47;box-shadow:0 28px 70px #0006,0 6px 20px #0003,inset 0 1px 1px #f0d9ff4d,inset 1px 0 #ffffff14,inset 0 -1px #a68bbb1f}
+  :root[data-theme=dark] .size-dialog .size-choice {background:linear-gradient(140deg,#c6b7d51a,#5f46791f);border-color:#e7d2ff33;box-shadow:inset 0 1px #ffffff1a,0 2px 6px #0001}
+  :root[data-theme=dark] .size-dialog .size-choice:hover {background:#bc94df24;border-color:#a58ac3}
+  :root[data-theme=dark] .size-dialog .size-choice:has(input:checked) {background:linear-gradient(140deg,#9970bf4d,#7f4f9f33);border-color:var(--purple);box-shadow:inset 0 0 0 1px var(--purple),inset 0 2px 2px #ffffff1a}
+  :root[data-theme=dark] .size-dialog .dialog-heading .icon-button {background:linear-gradient(135deg,#d9c6ee29,#ffffff0d);border-color:#ffffff33}
+}
+/* ポリシーの文章は、内容を変えずに本文・リンク・強調欄のコントラストをそろえます。 */
+:root[data-theme=dark] .legal-content {background:var(--white)}
+:root[data-theme=dark] .legal-nav,:root[data-theme=dark] .back-link,:root[data-theme=dark] .legal-lead,:root[data-theme=dark] .legal-meta,:root[data-theme=dark] .legal-content p,:root[data-theme=dark] .legal-content li {color:var(--muted)}
+:root[data-theme=dark] .legal-content a {color:var(--purple)}
+:root[data-theme=dark] .legal-content .policy-highlight {background:var(--tint)}
+:root[data-theme=dark] .eyebrow {color:var(--purple)}
+.legal-header .brand {font-size:16px;font-weight:600}
+@media(max-width:700px) {
+  .header {gap:12px}
+  .theme-toggle {width:36px;height:36px}
+  .legal-header {flex-wrap:wrap;gap:6px 14px;padding-block:12px}
+  .legal-header .legal-nav {order:3;flex-basis:100%;margin-left:0;justify-content:flex-start;gap:16px;font-size:11px}
+  .legal-header .theme-toggle {margin-left:auto}
+  .header.legal-header .legal-nav a {display:flex}
+  .legal-header .brand {font-size:14px}
+}
+@media(max-width:430px) {
+  .header:not(.legal-header) nav {display:none}
+  .header:not(.legal-header) .theme-toggle {margin-left:auto}
+}
+@media(prefers-reduced-transparency:reduce) {
+  :root[data-theme=dark] .size-dialog {background:#272331;border-color:var(--line)}
+  :root[data-theme=dark] .size-dialog .size-choice,:root[data-theme=dark] .size-dialog .dialog-heading .icon-button,:root[data-theme=dark] .size-dialog .custom-size-field input {background:#302839;border-color:var(--line)}
+  :root[data-theme=dark] .size-dialog .size-choice:has(input:checked) {background:#443255;border-color:var(--purple)}
+}
+@media(forced-colors:active) {
+  .theme-toggle,:root[data-theme=dark] .size-dialog,:root[data-theme=dark] .size-dialog .size-choice,:root[data-theme=dark] .size-dialog .dialog-heading .icon-button {background:Canvas;border:1px solid CanvasText;box-shadow:none}
+}
