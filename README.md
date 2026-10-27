@@ -204,11 +204,11 @@ WebPはすでに圧縮されているため、ZIPではSTORE（再圧縮しな�
 
 ## ポリシー・権利表示
 
-[プライバシーポリシー](privacy.html) · [利用条件](terms.html) · [ライセンス表示](licenses.html) · [LICENSE](LICENSE)
+[プライバシーポリシー](privacy.html) · [利用条件](terms.html) · [ライセンス表示](licenses.html) · [LICENSE](LICENSE) · [権利関係の確認記録](RIGHTS_REVIEW.md)
 
 運営者はsyo motoyama、公開連絡先はsyoeureka@gmail.comです。GitHub PagesのIP記録と、メール問い合わせの取り扱いはプライバシーポリシーに記載しています。
 
-コードはGitHubで閲覧できますが、MIT等のOSS再利用許諾は付与していません。コード等の取り扱いは`LICENSE`を確認してください。画像変換サービスは個人・業務とも無料で利用できます。
+コードの閲覧と、個人学習のためのダウンロード・ローカル実行・ローカル改変を許可しています。再配布・別サイトでの公開等は本許諾に含まれません。法令・GitHubの規約等による権利は制限しません。MIT等のOSSライセンスではなく、詳しくは[LICENSE](LICENSE)を確認してください。画像変換サービスは個人・業務とも無料で利用できます。
 
 ロゴ・OGPはImagegenで生成し、ファビコンは生成ロゴから書き出しています。第三者のJavaScript・WebAssembly・フォントは同梱していません。広告・解析・画像送信などの機能を追加する場合は、実際の取り扱いに合わせてポリシーも更新してください。
 

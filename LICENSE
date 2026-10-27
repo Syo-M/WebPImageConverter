@@ -1,28 +1,100 @@
-Rights and Permissions — 画像をWebPに変換 (Image to WebP)
-Last updated: 2026-10-27
-Operator/contact: syo motoyama <syoeureka@gmail.com>
+個人学習用の限定利用許諾 / Limited Personal Study License
+Version: 1.0.1
+Effective / Last updated: 2026-10-27
+許諾者・連絡先 / Licensor and contact:
+syo motoyama <syoeureka@gmail.com>
 
-This project does not grant an additional open-source license (such as
-MIT) for its source code, design, or other project assets. Rights are
-reserved to the extent recognized by applicable law. This notice does
-not restrict statutory rights or permissions arising under GitHub's
-Terms of Service, including applicable rights to view and fork a public
-repository. For other permissions, contact the operator above.
+【日本語】
 
-Use of the hosted image-conversion tool is free for personal and business
-purposes, subject to the Terms of Use in terms.html. Permission to use
-the service is separate from permission to redistribute the project.
+1. 対象と権利の範囲
+本通知とともに配布される本プロジェクトのHTML・CSS・JavaScript、関連文書、
+および付属画像を対象とします。許諾者は、自己が許諾する権限を持つ部分について、
+法令上許諾が必要な範囲でのみ、以下の利用を認めます。法令上保護されない表現、
+機能・アイデア、一般的なアルゴリズムに、新たな独占権を主張するものではありません。
 
-The operator acquires no ownership or copyright in selected images or
-conversion results. Using this tool alone imposes no attribution or
-source-disclosure requirement on those results. Existing rights and
-licenses in the original images remain applicable.
+2. 許可する利用
+閲覧と、利用者自身の個人学習を目的とするダウンロード、手元の端末への複製、
+ローカル実行、ローカルでの改変を、無償・非独占的に許可します。付属画像は、
+そのローカル版を動かすために必要な範囲でコピーできます。コピーには本通知を
+残してください。
 
-The current distribution bundles no third-party JavaScript libraries,
-WebAssembly, or font files. Browser/OS components and linked external
-services remain subject to their providers' terms. This notice does not
-grant any third-party patent rights.
+3. 本許諾に含めない利用
+前項以外の再配布、販売、別サイトでの公開・再ホスティング、改変版の公開、
+制作物への組み込み、ロゴ等の独立した再利用は、本許諾に含めません。
+これらを希望する場合は、事前に許諾者の書面（電子メールを含む）による許可を
+得てください。MIT等のオープンソースライセンスではありません。
 
-Japanese explanation: licenses.html
-Privacy Policy: privacy.html
-Terms of Use: terms.html
+4. 法令・GitHubの規約等による権利
+本通知は、適用法令に基づく利用や、GitHubの利用規約と機能に基づいて認められる
+閲覧・フォーク等の権利を制限しません。これらにより別途認められる行為に、
+本通知が優先するという意味ではありません。第三者の権利は許諾しません。
+
+5. 画像変換サービスと利用者の画像
+運営者が提供する画像変換サイトは、個人・業務を問わず無料で利用できます。
+サービスの利用と、本プロジェクトのコード等の再利用は別の許可です。
+運営者は、利用者が選択した元画像や変換結果の所有権・著作権を取得しません。
+本ツールを使ったことだけを理由に、変換結果へのクレジット表記やソースコードの
+公開を求めません。元画像についての第三者の権利・利用条件は引き続き適用されます。
+
+6. AI生成物・形式名等
+開発には生成AIを利用し、ロゴ・ファビコン・OGP画像はImageGenで生成しています。
+AI生成物の著作物性や独占的な権利は保証しません。第三者の商標・特許・画像等に
+ついての権利を許諾・保証せず、公式サービスや提携関係を示すものでもありません。
+
+7. 保証・法令上の権利
+特定用途への適合や無停止の動作等を保証するものではありません。ただし、
+適用法令上の責任、故意・重大な過失による責任、その他制限できない利用者の権利を
+免除・制限するものではありません。利用条件は terms.html、情報の取り扱いは
+privacy.html を参照してください。
+
+8. 適用する版
+本通知を添付して配布する版に適用します。過去の版のタグや、その版に添付された
+通知を書き換えるものではありません。以下の英語は便宜的な訳です。日本語を
+基本としますが、適用される強行法規が優先します。
+
+【English】
+
+1. Scope. This notice covers the project's HTML, CSS, JavaScript,
+accompanying documentation, and included images distributed with it.
+The licensor grants permissions only for rights the licensor may grant,
+and only where permission is required by applicable law. No new exclusive
+rights are claimed in unprotected expression, ideas, functionality, or
+common algorithms.
+
+2. Permission. You may view, download, copy to your device, run locally,
+and modify locally solely for your own personal study, free of charge
+and nonexclusively. Included images may be copied as needed to run that
+local copy. Retain this notice with copies.
+
+3. Excluded uses. This permission does not include other redistribution,
+sale, publication or rehosting on another website, publication of modified
+versions, incorporation into other products, or independent reuse of logos
+or other included images. Obtain prior written permission (email is
+acceptable) for these uses. This is not an open-source license such as MIT.
+
+4. Independent rights. This notice does not restrict rights available under
+applicable law or GitHub's Terms of Service and functionality, including
+applicable viewing and forking rights. It does not override independently
+authorized uses or grant any third-party rights.
+
+5. Hosted service and user images. The operator's hosted conversion tool
+is free for personal and business use. Service use is distinct from reuse
+of the project. The operator acquires no ownership or copyright in your
+original images or conversion results. Use of the tool alone creates no
+attribution or source-disclosure requirement for results. Existing rights
+and conditions in original images remain applicable.
+
+6. AI and branding. Generative AI was used during development; the logo,
+favicons, and OGP image were generated with ImageGen. Copyrightability or
+exclusive rights in AI output are not guaranteed. No third-party trademark,
+patent, or image rights, official status, or affiliation are granted or
+implied.
+
+7. Warranty and mandatory rights. Fitness for particular purposes and
+uninterrupted operation are not guaranteed. This does not exclude statutory
+liability, liability for intent or gross negligence, or any mandatory rights
+that cannot lawfully be limited. See terms.html and privacy.html.
+
+8. Versions and language. This notice applies to versions distributed with
+it and does not rewrite previous tags or notices. This English translation
+is for convenience; the Japanese text is primary, subject to mandatory law.

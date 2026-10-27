@@ -10,6 +10,7 @@ node_modules/
 
 # 公開・管理に必要な文書は追跡する
 !README.md
+!RIGHTS_REVIEW.md
 !LICENSE
 !LICENSE.txt
 !LICENSE.md
