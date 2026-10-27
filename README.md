@@ -4,7 +4,15 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 
 [GitHubのソースコード](https://github.com/Syo-M/WebPImageConverter) · [サイトを開く](https://syo-m.github.io/WebPImageConverter/) · [リリース](https://github.com/Syo-M/WebPImageConverter/releases)
 
-## 最新版：v1.1.0
+## 最新版：v1.1.1
+
+出力サイズモーダルを半透明のガラス調に変更しました。背後の色や形を柔らかくぼかし、縁の光沢と影で奥行きを付けています。選択カード・閉じるボタン・カスタム入力欄も同じ質感に統一しました。
+
+選択状態と文字の読みやすさを保ち、背景ぼかしの非対応ブラウザ、透明度を下げる設定、強制カラーモードでは不透明な背景などに切り替えます。画像変換・保存の仕様に変更はありません。
+
+詳細は[v1.1.1のRelease](https://github.com/Syo-M/WebPImageConverter/releases/tag/v1.1.1)で確認できます。
+
+### v1.1.0での主な変更
 
 Bentoレイアウトへ画面を刷新しました。画像の追加・変換設定・プレビュー一覧・保存を4つの区画にまとめ、サイト名をコンパクトなヘッダーに統合しています。
 

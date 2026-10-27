@@ -132,8 +132,8 @@ progress::-moz-progress-bar {background:var(--purple)}
 .footer-links {display:flex;justify-content:flex-end;gap:20px;flex-wrap:wrap;margin-left:auto}
 .footer-links a:hover {text-decoration:underline}
 /* native dialogを使い、フォーカスの移動・Escでの終了をブラウザに任せます。 */
-.size-dialog {color:var(--ink);background:var(--white);width:min(540px,calc(100% - 28px));max-height:calc(100% - 32px);border:1px solid var(--line);border-radius:26px;padding:25px;box-shadow:0 30px 80px #20163c35;overscroll-behavior:contain}
-.size-dialog::backdrop {background:#241e4045;backdrop-filter:blur(8px)}
+.size-dialog {color:var(--ink);background:#f8f7fc;width:min(540px,calc(100% - 28px));max-height:calc(100% - 32px);border:1px solid var(--line);border-radius:26px;padding:25px;box-shadow:0 30px 80px #20163c29,inset 0 1px 0 #fff;overscroll-behavior:contain}
+.size-dialog::backdrop {background:#241e4024;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
 .size-dialog[open] {animation:dialog-arrive .25s cubic-bezier(.2,.7,.2,1)}
 .dialog-heading {display:flex;align-items:center;justify-content:space-between;gap:16px}
 .dialog-heading h2 {font-size:19px}
@@ -154,6 +154,47 @@ progress::-moz-progress-bar {background:var(--purple)}
 .dialog-footer {margin-top:20px;display:flex;gap:12px;align-items:center;justify-content:space-between}
 .dialog-footer p {font-size:11px;color:var(--muted);line-height:1.8;margin:0}
 .dialog-footer .button {white-space:nowrap}
+/* ガラスの面自体で背後をぼかします。非対応ブラウザは上の不透明な背景を使います。 */
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  .size-dialog {
+    background:linear-gradient(135deg,#ffffffad 0%,#ffffff4d 42%,#eee8ff70 100%);
+    -webkit-backdrop-filter:blur(18px) saturate(155%);
+    backdrop-filter:blur(18px) saturate(155%);
+    border-color:#ffffffbc;
+    background-clip:padding-box;
+    box-shadow:0 28px 70px #28203f29,0 6px 20px #28203f0c,inset 0 1px 1px #fffffff2,inset 1px 0 0 #ffffff80,inset 0 -1px 0 #b9aad13d;
+  }
+  /* 選択カードも透過させ、モーダル全面が白い板に見えることを防ぎます。 */
+  .size-dialog .size-choice {
+    background:linear-gradient(140deg,#ffffff70,#ffffff29);
+    border-color:#ffffffa6;
+    box-shadow:inset 0 1px 0 #ffffffa6,0 2px 6px #39294c06;
+  }
+  .size-dialog .size-choice:hover {background:#ffffff80;border-color:#a995d3}
+  .size-dialog .size-choice:has(input:checked) {
+    background:linear-gradient(140deg,#eee5ff94,#d8caf645);
+    border-color:var(--purple);
+    box-shadow:inset 0 0 0 1px var(--purple),inset 0 2px 2px #ffffff80,0 4px 12px #6650b60d;
+  }
+  .size-dialog .dialog-heading .icon-button {
+    background:linear-gradient(135deg,#ffffff80,#ffffff33);
+    border-color:#ffffffa6;
+    box-shadow:inset 0 1px 0 #ffffffb3,0 3px 8px #39294c08;
+  }
+  .size-dialog .dialog-heading .icon-button:hover {background:#ffffffb3}
+  .size-dialog .custom-size-field input {background:#ffffff80;border-color:#ffffffb3;box-shadow:inset 0 1px 3px #39294c0a}
+}
+/* 透明度を下げる設定では透過を解除し、選択状態と文字をはっきり表示します。 */
+@media(prefers-reduced-transparency:reduce) {
+  .size-dialog {background:#f8f7fc;-webkit-backdrop-filter:none;backdrop-filter:none;border-color:var(--line)}
+  .size-dialog .size-choice,.size-dialog .dialog-heading .icon-button,.size-dialog .custom-size-field input {background:#fff;border-color:var(--line)}
+  .size-dialog .size-choice:has(input:checked) {background:var(--tint);border-color:var(--purple)}
+  .size-dialog::backdrop {-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+@media(forced-colors:active) {
+  .size-dialog,.size-dialog .size-choice,.size-dialog .dialog-heading .icon-button {background:Canvas;border:1px solid CanvasText;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .size-dialog .size-choice:has(input:checked) {outline:2px solid Highlight}
+}
 @keyframes row-arrive {from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes summary-arrive {from{transform:translateY(5px)}to{transform:none}}
 @keyframes dialog-arrive {from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
