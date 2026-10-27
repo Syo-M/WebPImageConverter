@@ -19,6 +19,7 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 - JPEG / PNG / GIF / WebP / BMP / AVIFの混在した複数画像を追加
 - ファイル選択・ドラッグ＆ドロップ、追加直後のサムネイル表示
 - 10〜100%の画質指定、縦横比を保つ縮小、透明背景の保持・白背景への合成
+- モーダルで出力サイズを選択（元のサイズ・プリセット・カスタム指定）
 - 変換前後の容量・削減率・出力サイズの確認
 - 個別ダウンロード、成功した画像をまとめたZIP保存
 - 同名ファイルの連番化、個別・一括削除、設定変更後の再変換
@@ -48,6 +49,7 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 .
 ├── index.html                    # 画面・画像一覧のtemplate・moduleの入口
 ├── styles.css                    # 変換画面のスタイル
+├── guide.css                     # 操作手順・FAQのレイアウトとアニメーション
 ├── js/
 │   ├── main.js                   # 起動とイベントの接続
 │   ├── config.js                 # 枚数・容量・画素数の上限
@@ -66,7 +68,16 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 │   ├── ui/
 │   │   ├── elements.js           # HTML要素とJSの名前の対応表
 │   │   ├── file-list.js          # サムネイル・ファイル情報の行
-│   │   └── page.js               # ボタン・集計・通知・進捗・画質説明
+│   │   ├── page.js               # ボタン・通知・進捗・画質説明
+│   │   ├── conversion-summary.js # 変換済み画像の容量集計
+│   │   ├── size-dialog.js        # サイズ選択モーダル・入力検証
+│   │   ├── workflow-guide.js     # 実際の設定と独立した操作例
+│   │   └── faq.js                # 質問の絞り込み・回答の開閉
+│   ├── motion/                  # 画面の動き（変換処理から独立）
+│   │   ├── file-depth.js         # ファイルの3D表現・ポインター追従
+│   │   ├── smooth-scroll.js      # ホイールの速度上限・穏やかな減速
+│   │   ├── anchor-navigation.js  # ページ内リンクの滑らかな移動
+│   │   └── guide-depth.js        # ガイドの傾き・一度だけの登場
 │   ├── utils/
 │   │   ├── file-names.js         # 出力ファイル名の作成
 │   │   ├── format-file-size.js   # B / KB / MB表示
@@ -125,6 +136,24 @@ import { getQualityDescription } from '../quality.js';
 ```
 
 ブラウザが`import`をたどって必要なファイルを読み込みます。相対パスと`.js`の拡張子を指定することで、GitHub Pagesのリポジトリ配下でも動きます。モジュールは自動的にstrict modeで動き、同じモジュールは1回だけ評価されます。
+
+## サイズ選択と画面の動き
+
+[size-dialog.js](js/ui/size-dialog.js)は、モーダル内の選択を一時的な値として保持し、「このサイズを適用」を押した時だけ隠し入力欄へ反映します。`input`イベントを発生させることで、画質や背景と同じ`handleSettingsChange()`へ接続します。Escや閉じるボタンで終了した場合は、元の設定を維持します。
+
+[motion/file-depth.js](js/motion/file-depth.js)はCSSの3D変形へ渡す値を、`requestAnimationFrame()`で少しずつ目標値に近づけます。静止したら更新を止めます。[motion/smooth-scroll.js](js/motion/smooth-scroll.js)は段階的なホイール入力に穏やかな減速を加えます。1回の移動量・先にためる距離・速度に上限を設け、連続入力で加速しすぎないようにしています。デバイス種別は直接取得できないため、細かな入力や横方向を含む操作、タッチ、モーダルのスクロールはブラウザの標準動作を使います。
+
+[anchor-navigation.js](js/motion/anchor-navigation.js)はページ内リンクの移動を担当します。約0.9〜1.4秒かけてゆっくり加速・減速し、利用者がホイール・タッチ・キー操作を始めたら中断します。到着後は移動先にフォーカスを移します。
+
+どちらもOSの「視差効果を減らす」に相当する設定（`prefers-reduced-motion`）を尊重します。これらは装飾と操作感を担当し、画像の変換やZIPの作成には関与しません。外部のアニメーションライブラリは使用していません。
+
+### 操作手順とFAQ
+
+[workflow-guide.js](js/ui/workflow-guide.js)は3つの操作例を再生します。カードの`data-phase`を`ready`・`playing`・`done`へ切り替え、[guide.css](guide.css)のアニメーションにつなぎます。ガイドのスライダーは`guide-quality`、実際の設定は`quality`という別の入力欄で、操作例は`appState`を書き換えません。
+
+[faq.js](js/ui/faq.js)は質問の`data-category`と選択中のボタンを比較して表示を切り替えます。回答はHTMLの`details`・`summary`で構成し、JavaScriptが有効なときはWeb Animations APIで高さを滑らかに変えます。連続クリックで中断されたアニメーションの完了処理が、新しい状態を上書きしないようにしています。
+
+[guide-depth.js](js/motion/guide-depth.js)はポインターに合わせた小さな傾きと、`IntersectionObserver`による一度だけの登場を担当します。「視差効果を減らす」設定では傾き・登場・操作例・回答の開閉アニメーションを省略し、内容と操作は維持します。
 
 ## 画像1枚のデータを追う
 

@@ -9,7 +9,7 @@ export function getQualityDescription(qualityPercent) {
       level: 'low',
       label: '低画質',
       range: '10–39%',
-      description: '圧縮を優先します。細部のつぶれ、輪郭のにじみ、色の境界の乱れが目立つ場合があります。',
+      description: '圧縮を優先します。細部のつぶれや輪郭のにじみが目立つ場合があります。',
     };
   }
   if (qualityPercent < 80) {
@@ -17,13 +17,13 @@ export function getQualityDescription(qualityPercent) {
       level: 'medium',
       label: '中画質',
       range: '40–79%',
-      description: '容量と画質のバランスを重視します。写真の細かな質感や、文字・細線の輪郭が変化する場合があります。',
+      description: '容量と画質を両立します。細かな質感や文字・細線が変化する場合があります。',
     };
   }
   return {
     level: 'high',
     label: '高画質',
     range: '80–100%',
-    description: '細部の再現を優先します。元画像との差は比較的小さくなりますが、質感や輪郭に変化が生じる場合があります。',
+    description: '細部の再現を優先します。質感や輪郭が変化する場合があります。',
   };
 }

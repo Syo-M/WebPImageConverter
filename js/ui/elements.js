@@ -12,7 +12,12 @@ export const pageElements = {
   qualityLevel: document.getElementById('quality-level'),
   qualityRange: document.getElementById('quality-range'),
   qualityDescription: document.getElementById('quality-description'),
-  maxSizeSelect: document.getElementById('max-size'),
+  maxSizeInput: document.getElementById('max-size'),
+  sizeButton: document.getElementById('size-button'),
+  emptyState: document.getElementById('empty-state'),
+  resultsFootnote: document.getElementById('results-footnote'),
+  outputPlaceholder: document.getElementById('output-placeholder'),
+  outputCount: document.getElementById('output-count'),
   whiteBackgroundCheckbox: document.getElementById('white-background'),
   convertButton: document.getElementById('convert-all'),
   zipButton: document.getElementById('download-zip'),
@@ -32,6 +37,6 @@ export const pageElements = {
 // 同じタイミングで有効・無効を切り替える設定欄を配列にまとめます。
 export const conversionSettingElements = [
   pageElements.qualityInput,
-  pageElements.maxSizeSelect,
+  pageElements.maxSizeInput,
   pageElements.whiteBackgroundCheckbox,
 ];

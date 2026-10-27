@@ -1,7 +1,7 @@
 import { pageElements, conversionSettingElements } from './elements.js';
 import { updateImageRowButtons } from './file-list.js';
 import { getQualityDescription } from '../quality.js';
-import { formatFileSize } from '../utils/format-file-size.js';
+import { renderConversionSummary } from './conversion-summary.js';
 
 /** 通知欄を更新します。textContentを使い、ファイル名をHTMLとして解釈させません。 */
 export function showNotice(message) {
@@ -13,7 +13,7 @@ export function showNotice(message) {
 export function readConversionSettings() {
   return {
     qualityRatio: Number(pageElements.qualityInput.value) / 100,
-    maxLongEdge: Number(pageElements.maxSizeSelect.value),
+    maxLongEdge: Number(pageElements.maxSizeInput.value),
     useWhiteBackground: pageElements.whiteBackgroundCheckbox.checked,
   };
 }
@@ -38,11 +38,17 @@ export function renderPage(appState) {
   const completedEntries = imageEntries.filter((imageEntry) => imageEntry.convertedBlob);
   const hasUnconvertedImages = imageEntries.some((imageEntry) => !imageEntry.convertedBlob);
 
-  pageElements.resultsSection.hidden = imageEntries.length === 0;
+  pageElements.emptyState.hidden = imageEntries.length > 0;
+  pageElements.resultsFootnote.hidden = imageEntries.length === 0;
+  pageElements.outputPlaceholder.hidden = completedEntries.length > 0;
+  pageElements.outputCount.textContent = imageEntries.length ? `${imageEntries.length}枚` : '—';
+  pageElements.outputPlaceholder.querySelector('p').textContent = imageEntries.length
+    ? '変換設定を確認して実行してください' : '画像を追加して変換設定を確認してください';
+  pageElements.sizeButton.disabled = isLocked;
   pageElements.fileCount.textContent = `${imageEntries.length}枚`;
   pageElements.convertButton.disabled = isLocked || !hasUnconvertedImages;
   pageElements.zipButton.disabled = isLocked || completedEntries.length === 0;
-  pageElements.clearButton.disabled = isLocked;
+  pageElements.clearButton.disabled = isLocked || imageEntries.length === 0;
   pageElements.chooseFilesButton.disabled = isCreatingZip;
   // ボタン内のアイコンを消さないよう、専用の文字要素だけを書き換えます。
   pageElements.convertButton.querySelector('.button-label').textContent = isConverting ? '変換中…' : 'WebPに変換';
@@ -51,27 +57,6 @@ export function renderPage(appState) {
   for (const settingElement of conversionSettingElements) settingElement.disabled = isLocked;
   for (const imageEntry of imageEntries) updateImageRowButtons(imageEntry, isLocked);
   renderConversionSummary(completedEntries);
-}
-
-/** 成功した画像だけを集計し、変換前後の合計容量を表示します。 */
-function renderConversionSummary(completedEntries) {
-  pageElements.summary.hidden = completedEntries.length === 0;
-  if (completedEntries.length === 0) return;
-
-  const originalBytes = completedEntries.reduce(
-    (totalBytes, imageEntry) => totalBytes + imageEntry.originalFile.size, 0,
-  );
-  const convertedBytes = completedEntries.reduce(
-    (totalBytes, imageEntry) => totalBytes + imageEntry.convertedBlob.size, 0,
-  );
-  const reductionPercent = originalBytes ? (1 - convertedBytes / originalBytes) * 100 : 0;
-  const summaryHeading = document.createElement('strong');
-  summaryHeading.textContent = reductionPercent >= 0
-    ? `容量を${reductionPercent.toFixed(1)}%削減`
-    : `容量が${Math.abs(reductionPercent).toFixed(1)}%増加`;
-  const summaryDetail = document.createElement('span');
-  summaryDetail.textContent = `${formatFileSize(originalBytes)} → ${formatFileSize(convertedBytes)} ・ ${completedEntries.length}枚変換済み`;
-  pageElements.summary.replaceChildren(summaryHeading, summaryDetail);
 }
 
 /** 現在のファイル名と完了数をprogress要素に反映します。 */

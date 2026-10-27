@@ -3,6 +3,12 @@
  * ここでは「どの操作で、どの処理を呼ぶか」だけを決めます。
  * 実際の画像処理・画面描画・ZIP作成は、import先の小さなモジュールへ分けています。
  */
+import { bindWorkflowGuide } from './ui/workflow-guide.js';
+import { bindFaq } from './ui/faq.js';
+import { bindGuideDepth } from './motion/guide-depth.js';
+import { bindSizeDialog } from './ui/size-dialog.js';
+import { bindFileDepth } from './motion/file-depth.js';
+import { bindSmoothScroll } from './motion/smooth-scroll.js';
 import { appState } from './state.js';
 import { pageElements, conversionSettingElements } from './ui/elements.js';
 import { renderPage, renderQualityDescription } from './ui/page.js';
@@ -14,6 +20,13 @@ import { downloadCompletedImagesAsZip } from './controllers/download-controller.
 /** イベントを登録し、まだ画像がない初期画面を描画します。 */
 function initializeApplication() {
   bindFileInputEvents();
+  bindSizeDialog();
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  bindFileDepth(reducedMotion);
+  bindSmoothScroll(reducedMotion);
+  bindWorkflowGuide(reducedMotion);
+  bindFaq(reducedMotion);
+  bindGuideDepth(reducedMotion);
   pageElements.convertButton.addEventListener('click', convertPendingImages);
   pageElements.zipButton.addEventListener('click', downloadCompletedImagesAsZip);
   pageElements.clearButton.addEventListener('click', clearAllImages);
