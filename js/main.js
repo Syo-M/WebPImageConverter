@@ -11,7 +11,7 @@ import { bindSizeDialog } from './ui/size-dialog.js';
 import { bindFileDepth } from './motion/file-depth.js';
 import { bindSmoothScroll } from './motion/smooth-scroll.js';
 import { appState } from './state.js';
-import { pageElements, conversionSettingElements } from './ui/elements.js';
+import { pageElements, conversionSettingElements, conversionButtons, zipButtons } from './ui/elements.js';
 import { renderPage, renderQualityDescription } from './ui/page.js';
 import { bindFileInputEvents } from './events/file-input-events.js';
 import { clearAllImages, handleSettingsChange } from './controllers/file-controller.js';
@@ -32,8 +32,9 @@ function initializeApplication() {
   bindWorkflowGuide(reducedMotion);
   bindFaq(reducedMotion);
   bindGuideDepth(reducedMotion);
-  pageElements.convertButton.addEventListener('click', convertPendingImages);
-  pageElements.zipButton.addEventListener('click', downloadCompletedImagesAsZip);
+  // 入口が違っても同じ変換処理へ渡し、処理中の二重実行はコントローラー側でも防ぎます。
+  for (const button of conversionButtons) button.addEventListener('click', convertPendingImages);
+  for (const button of zipButtons) button.addEventListener('click', downloadCompletedImagesAsZip);
   pageElements.clearButton.addEventListener('click', clearAllImages);
 
   // 画質・サイズ・背景のどれを変更しても、共通の再設定処理を呼びます。

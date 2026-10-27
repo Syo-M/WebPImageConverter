@@ -4,6 +4,11 @@
  * type="module"のスクリプトはHTMLの解析後に動くため、ここで要素を取得できます。
  */
 export const pageElements = {
+  uploadTipTitle: document.getElementById('upload-tip-title'),
+  nextActionTitle: document.getElementById('next-action-title'),
+  nextAction: document.getElementById('next-action'),
+  nextActionText: document.getElementById('next-action-text'),
+  uploadTip: document.getElementById('upload-tip'),
   fileInput: document.getElementById('file-input'),
   chooseFilesButton: document.getElementById('choose-files'),
   dropZone: document.getElementById('drop-zone'),
@@ -20,6 +25,9 @@ export const pageElements = {
   outputCount: document.getElementById('output-count'),
   whiteBackgroundCheckbox: document.getElementById('white-background'),
   convertButton: document.getElementById('convert-all'),
+  uploadTipText: document.getElementById('upload-tip-text'),
+  inlineZipButton: document.getElementById('zip-from-upload'),
+  inlineConvertButton: document.getElementById('convert-from-upload'),
   zipButton: document.getElementById('download-zip'),
   clearButton: document.getElementById('clear-all'),
   resultsSection: document.getElementById('results'),
@@ -40,3 +48,9 @@ export const conversionSettingElements = [
   pageElements.maxSizeInput,
   pageElements.whiteBackgroundCheckbox,
 ];
+
+// 同じ変換処理を実行する2か所のボタン。ラベル・無効状態・イベントをまとめて同期します。
+export const conversionButtons = [pageElements.convertButton, pageElements.inlineConvertButton];
+
+// ZIP保存も入口ごとに処理を複製せず、同じ状態・イベントへ接続します。
+export const zipButtons = [pageElements.zipButton, pageElements.inlineZipButton];

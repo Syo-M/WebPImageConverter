@@ -14,19 +14,13 @@ export function validateImageFile(originalFile, imageEntries) {
     return { message: `${originalFile.name}: 空のファイルです。`, stopAdding: false };
   }
 
-  const hasHeicExtension = /\.(heic|heif)$/i.test(originalFile.name);
-  const hasHeicMimeType = /^image\/(heic|heif)(-sequence)?$/i.test(originalFile.type);
-  if (hasHeicExtension || hasHeicMimeType) {
+  if (!isSupportedImageFile(originalFile)) {
+    const isHeic = /\.(heic|heif)$/i.test(originalFile.name) || /^image\/(heic|heif)(-sequence)?$/i.test(originalFile.type);
     return {
-      message: `${originalFile.name}: HEIC・HEIFは非対応です。JPEGやPNGに書き出してから追加してください。`,
+      message: isHeic ? `${originalFile.name}: HEIC・HEIFは非対応です。JPEGやPNGに書き出してから追加してください。`
+        : `${originalFile.name}: 対応していない形式です。`,
       stopAdding: false,
     };
-  }
-
-  const hasSupportedExtension = /\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(originalFile.name);
-  const hasSupportedMimeType = /^image\/(jpeg|png|gif|webp|bmp|avif)$/i.test(originalFile.type);
-  if (!hasSupportedExtension && !hasSupportedMimeType) {
-    return { message: `${originalFile.name}: 対応していない形式です。`, stopAdding: false };
   }
   if (originalFile.size > MAX_FILE_SIZE_BYTES) {
     return { message: `${originalFile.name}: 1枚50MBまで追加できます。`, stopAdding: false };
@@ -47,4 +41,11 @@ export function validateImageFile(originalFile, imageEntries) {
     };
   }
   return null;
+}
+
+/** フォルダ内の画像抽出と通常の追加で、対応形式の判断を共通にします。 */
+export function isSupportedImageFile(file) {
+  if (/\.(heic|heif)$/i.test(file.name) || /^image\/(heic|heif)(-sequence)?$/i.test(file.type)) return false;
+  return /\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(file.name)
+    || /^image\/(jpeg|png|gif|webp|bmp|avif)$/i.test(file.type);
 }

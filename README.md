@@ -4,7 +4,22 @@ JPEG・PNGなどを、ブラウザ内でWebPへ一括変換する静的サイト
 
 [GitHubのソースコード](https://github.com/Syo-M/WebPImageConverter) · [サイトを開く](https://syo-m.github.io/WebPImageConverter/) · [リリース](https://github.com/Syo-M/WebPImageConverter/releases)
 
-## 最新版：v1.3.0
+## 最新版：v1.4.0
+
+フォルダからの一括取り込みと、追加・変換・保存の操作案内を追加しました。
+
+- フォルダをドラッグ＆ドロップすると、サブフォルダ内も含めて対応形式の画像だけを抽出します
+- 非対応ファイルや読み取り失敗はスキップし、件数を通知します。既存の容量・枚数制限も適用します
+- Tipsを「次は画像を変換」「次はZIPで保存」へ切り替え、Tips内からも変換・ZIP保存を実行できます
+- 次に操作するボタンをアクセント色と立体感で強調し、段階が切り替わる瞬間だけ発光します
+- ボタンの拡大縮小と表面のグラデーションは、どちらも0.7秒で一度だけ再生します
+- ホバーで浮き、押すと沈む動きを追加。「視差効果を減らす」設定にも対応します
+
+フォルダの読み取りとTipsの状態管理は専用モジュールへ分け、構成図・日本語コメント・処理の説明を更新しています。画像処理は引き続きブラウザ内で完結します。
+
+詳細は[v1.4.0のRelease](https://github.com/Syo-M/WebPImageConverter/releases/tag/v1.4.0)で確認できます。
+
+### v1.3.0での主な変更
 
 変換したWebPを保存する前に、元画像との画質の違いを拡大して確認できるようになりました。
 
@@ -67,6 +82,8 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 
 - JPEG / PNG / GIF / WebP / BMP / AVIFの混在した複数画像を追加
 - ファイル選択・ドラッグ＆ドロップ、追加直後のサムネイル表示
+- フォルダ・サブフォルダ内の対応画像をまとめて抽出（フォルダのドロップに対応したブラウザ）
+- 追加後は変換へTipsで案内し、変換後はZIP保存ボタンをアクセント色で表示
 - 10〜100%の画質指定、縦横比を保つ縮小、透明背景の保持・白背景への合成
 - モーダルで出力サイズを選択（元のサイズ・プリセット・カスタム指定）
 - ライト／ダークの切り替え、端末設定への初回追従、表示テーマの保存
@@ -115,6 +132,8 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 │   ├── state.js                  # 一覧データと一時URLの管理
 │   ├── file-validation.js        # 追加するファイルの検証
 │   ├── quality.js                # 低・中・高画質の説明
+│   ├── files/
+│   │   └── dropped-files.js      # ドロップ内容の確保・フォルダ内の対応画像探索
 │   ├── events/
 │   │   └── file-input-events.js  # 選択・ドラッグ＆ドロップ
 │   ├── controllers/              # 複数の機能を順番につないで処理を進める
@@ -128,6 +147,7 @@ Bentoレイアウトへ画面を刷新しました。画像の追加・変換設
 │   │   ├── elements.js           # HTML要素とJSの名前の対応表
 │   │   ├── file-list.js          # サムネイル・ファイル情報の行
 │   │   ├── page.js               # ボタン・通知・進捗・画質説明
+│   │   ├── next-action.js        # 次の操作のTips・変換とZIPの強調切替
 │   │   ├── conversion-summary.js # 変換済み画像の容量集計
 │   │   ├── size-dialog.js        # サイズ選択モーダル・入力検証
 │   │   ├── workflow-guide.js     # 実際の設定と独立した操作例
@@ -175,11 +195,14 @@ flowchart TD
   Main --> Interactions["ui：サイズ選択・操作ガイド・FAQ・画像比較"]
   Main --> Motion["motion：3D・スクロール・ページ内移動"]
   Main --> Controllers["controllers：追加・変換・保存の進行"]
+  Events --> Folders["files/dropped-files：フォルダを探索・対応形式を抽出"]
+  Folders --> Controllers
   Events --> Controllers
   Controllers --> State["state：画像一覧・処理中フラグ"]
   Controllers --> Images["images：デコード・WebP変換"]
   Controllers --> Zip["zip：ZIP生成"]
   Controllers --> UI["ui：データを画面へ反映"]
+  UI --> Next["ui/next-action：Tipsと次のボタンの強調"]
   Controllers --> Download["utils/download-file：保存"]
 ```
 
@@ -284,6 +307,16 @@ import { getQualityDescription } from '../quality.js';
 
 閉じる操作・Esc・背景クリックで比較を終了し、Canvasを1×1へ戻して画像要素のURL参照を外します。Object URLそのものは画像一覧が所有しているため、比較画面から`revokeObjectURL()`は呼びません。読み込み中に閉じた場合はリクエスト番号で古い完了処理を無効にし、新しい比較画面を上書きしないようにします。
 
+## フォルダの取り込みと次の操作の案内
+
+[file-input-events.js](js/events/file-input-events.js)はドロップのイベント中に[dropped-files.js](js/files/dropped-files.js)の`captureDroppedItems()`を呼びます。ドロップ内容はイベント終了後に参照できなくなるため、非同期処理を始める前にファイルとフォルダの参照を確保します。
+
+`collectDroppedImages()`はサブフォルダも順番に探索し、[file-validation.js](js/file-validation.js)の`isSupportedImageFile()`で対応形式を抽出します。フォルダの`readEntries()`は一度に全件を返すとは限らないため、空の配列になるまで同じ読み取りオブジェクトを使います。対応形式以外・読み取り失敗の件数は通知し、一部が失敗しても残りを続けます。
+
+探索は対応画像100枚、またはフォルダを含む10,000項目を上限とし、打ち切った場合は通知します。抽出後も通常の追加処理で容量・枚数制限を検証します。保存時はフォルダ階層を引き継がず、同名画像は連番で区別します。空のフォルダやフォルダのドロップを読み取れないブラウザでは、画像ファイルを直接選択して追加してください。
+
+[next-action.js](js/ui/next-action.js)は一覧の状態から次の操作を表示します。未変換画像があると変換ボタン、処理が終わり成功画像があるとZIP保存ボタンへ`primary`クラスを付け替えます。一部失敗した場合も成功分を保存でき、設定変更や追加で未変換画像ができると変換へ案内が戻ります。[styles.css](styles.css)は次の操作をアクセント色・上面のハイライト・厚みのある影で示します。`next-action.js`は直前の段階を覚え、画像追加・変換完了・再設定によって次の操作が変わったときだけ`action-arrival`クラスを切り替えます。光が約1秒で外側へ広がり、ボタンは約0.7秒でわずかに膨らんで戻り、同時に表面のグラデーションが約0.7秒で流れます。表面の色と外側の光は別の疑似要素で描き、文字の背後で重ねます。拡大縮小には`scale`を使い、ホバー・押下の`transform`と分けています。演出は一度だけで、処理中の再描画やZIP保存後に繰り返しません。Tipsの見出しも「次は画像を変換」「次はZIPで保存」へ更新します。ホバーでボタンが少し浮き、アイコンが進み、押すと沈みます。「視差効果を減らす」設定では発光と移動を省略し、強制配色ではシステムの色で操作対象を示します。Tips内とWebP出力欄の両方に「WebPに変換」ボタンを置きます。`elements.js`の`conversionButtons`配列でまとめ、`main.js`で同じ`convertPendingImages()`へ接続し、`page.js`で無効状態とラベルを同期します。変換中は両方を無効にし、Tips側も「変換中…」と表示します。完了するとTips内のボタンと説明をZIP保存へ切り替えます。ZIP保存も`zipButtons`配列で2か所の状態とイベントを同期し、同じ`downloadCompletedImagesAsZip()`を呼び出します。設定変更や未変換画像の追加時は変換ボタンへ戻します。
+
 ## 画像1枚のデータを追う
 
 [state.js](js/state.js)の`createImageEntry()`が、元ファイルと作業用データをまとめたオブジェクトを作ります。
@@ -373,5 +406,6 @@ WebPはすでに圧縮されているため、ZIPではSTORE（再圧縮しな�
 ## 参考資料
 
 - [MDN：JavaScript Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+- [MDN：フォルダのドロップとwebkitGetAsEntry()](https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/webkitGetAsEntry)
 - [MDN：CanvasのtoBlob()](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob)
 - [GitHub Pages：データの収集](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)

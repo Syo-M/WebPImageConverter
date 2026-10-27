@@ -275,3 +275,70 @@ progress::-moz-progress-bar {background:var(--purple)}
   *,*::before,*::after {scroll-behavior:auto!important;transition:none!important;animation:none!important}
   .file-stack {transform:rotateX(13deg) rotateY(-20deg)!important}
 }
+
+/* 次に押すボタンとTipsを同じアクセント色で示し、変換から保存へ案内します。 */
+.upload-tip {margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--white)}
+.upload-tip p {font-size:11px;line-height:1.8;margin:5px 0 8px}
+.upload-tip .button {width:100%;margin-top:3px;font-size:12px}
+.tip-label {font-size:11px;letter-spacing:.03em;font-weight:650;color:var(--purple)}
+.next-action {margin:0 0 14px;padding:12px 14px;border-left:3px solid var(--purple);border-radius:4px 12px 12px 4px;background:var(--tint)}
+.next-action p {margin:5px 0 0;font-size:11px;line-height:1.8;color:var(--ink)}
+.next-action[data-step=save] {animation:row-arrive .25s ease-out}
+.output-actions .button {transition:background .2s,color .2s,border-color .2s,box-shadow .2s}
+@media(prefers-reduced-motion:reduce) {.next-action[data-step=save] {animation:none}.output-actions .button {transition:none}}
+
+/* 次の操作は静かな立体感で示し、段階が切り替わる瞬間だけ外側へ光を広げます。 */
+.step-action {position:relative;isolation:isolate;--action-face:#7052b4;--action-base:#4e3585;--action-edge:#62479f;--action-depth:3px;--action-drop:7px;--action-blur:15px}
+:root[data-theme=dark] .step-action {--action-face:#805db9;--action-base:#4d3379;--action-edge:#9a77ce}
+.step-action.primary:not(:disabled),:root[data-theme=dark] .step-action.primary:not(:disabled) {
+  color:#fff;border:1px solid var(--action-edge);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--action-face),white 12%),var(--action-face));
+  box-shadow:inset 0 1px 0 #ffffff40,0 var(--action-depth) 0 var(--action-base),0 var(--action-drop) var(--action-blur) #543b862b;
+}
+.output-actions .step-action,.upload-tip .step-action {transition:transform .18s ease,box-shadow .18s ease,background .2s,border-color .2s}
+.step-action>svg {transition:transform .18s ease}
+@media(hover:hover) {
+  .step-action.primary:not(:disabled):hover {transform:translateY(-2px);--action-depth:4px;--action-drop:10px;--action-blur:20px}
+  .step-action.primary:not(:disabled):hover>svg {transform:translateX(3px)}
+  .step-action.primary:not(:disabled):hover>.download-action-icon {transform:translateY(2px)}
+}
+.step-action.primary:not(:disabled):active {transform:translateY(2px);--action-depth:1px;--action-drop:3px;--action-blur:7px}
+.step-action::after {content:"";position:absolute;inset:-4px;border:1px solid #bca0ec;border-radius:16px;opacity:0;pointer-events:none}
+/* scaleをtransformから分け、ホバーの浮き上がり・押下の沈み込みと干渉させません。 */
+.step-action.action-arrival.primary:not(:disabled) {animation:action-arrival-pop .7s cubic-bezier(.22,.61,.36,1) 1}
+@keyframes action-arrival-pop {
+  0% {scale:.98 .97}
+  38% {scale:1.03 1.065}
+  68% {scale:.993 .985}
+  85% {scale:1.004 1.008}
+  100% {scale:1}
+}
+/* 表面の色は別の疑似要素で0.7秒だけ流し、文字の背後で発光・拡大縮小と重ねます。 */
+.step-action::before {
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;opacity:0;
+  background:linear-gradient(110deg,transparent 25%,#ccb2ff88 40%,#ffffff99 50%,#a78be980 60%,transparent 75%);
+  background-size:250% 100%;background-position:100% 0;
+}
+.step-action.action-arrival.primary:not(:disabled)::before {animation:action-arrival-gradient .7s ease-out 1}
+@keyframes action-arrival-gradient {
+  0% {background-position:100% 0;opacity:0}
+  25% {opacity:.65}
+  75% {opacity:.65}
+  100% {background-position:0% 0;opacity:0}
+}
+.step-action.action-arrival.primary:not(:disabled)::after {animation:action-arrival-glow 1.1s ease-out 1}
+@keyframes action-arrival-glow {
+  0% {opacity:0;transform:scale(.99);box-shadow:0 0 0 0 #b397df00}
+  25% {opacity:.8;box-shadow:0 0 15px 4px #b397df55}
+  100% {opacity:0;transform:scale(1.045,1.15);box-shadow:0 0 26px 8px #b397df00}
+}
+/* 動きを減らす設定では立体感を保ち、発光と浮き沈みを省略します。 */
+@media(prefers-reduced-motion:reduce) {
+  .step-action.action-arrival {animation:none!important;scale:none}
+  .step-action::before,.step-action::after {animation:none!important}
+  .step-action.primary:not(:disabled):hover,.step-action.primary:not(:disabled):active,.step-action>svg {transform:none!important}
+}
+@media(forced-colors:active) {
+  .step-action::before,.step-action::after {display:none}
+  .step-action.primary:not(:disabled),:root[data-theme=dark] .step-action.primary:not(:disabled) {background:ButtonFace;color:ButtonText;border:2px solid Highlight;box-shadow:none}
+}

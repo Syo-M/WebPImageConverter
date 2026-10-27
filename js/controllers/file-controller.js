@@ -7,9 +7,13 @@ import { renderPage, renderQualityDescription, showNotice } from '../ui/page.js'
 import { downloadSingleImage } from './download-controller.js';
 
 /** ファイル選択・ドロップのどちらからも呼び出す、画像追加の共通処理です。 */
-export function addImageFiles(incomingFiles) {
-  if (appState.isCreatingZip) return;
+export function addImageFiles(incomingFiles, importMessages = []) {
+  if (appState.isCreatingZip) {
+    showNotice('ZIPの保存が終わってから画像を追加してください。');
+    return;
+  }
   const validationMessages = [];
+  let addedCount = 0;
 
   for (const originalFile of incomingFiles) {
     const validationError = validateImageFile(originalFile, appState.imageEntries);
@@ -20,6 +24,7 @@ export function addImageFiles(incomingFiles) {
     }
     const imageEntry = createImageEntry(originalFile, appState.imageEntries);
     appState.imageEntries.push(imageEntry);
+    addedCount += 1;
     addImageRow(imageEntry, {
       onDownloadRequested: downloadSingleImage,
       onRemoveRequested: removeImage,
@@ -32,7 +37,8 @@ export function addImageFiles(incomingFiles) {
   if (validationMessages.length > 6) {
     noticeText += `\nほか${validationMessages.length - 6}件のファイルを追加できませんでした。`;
   }
-  showNotice(noticeText);
+  const addedMessage = addedCount ? `${addedCount}枚を追加しました。「WebPに変換」で比較・保存の準備ができます。` : '';
+  showNotice([addedMessage, ...importMessages, noticeText].filter(Boolean).join('\n'));
   renderPage(appState);
 }
 

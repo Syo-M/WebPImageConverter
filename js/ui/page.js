@@ -1,4 +1,5 @@
-import { pageElements, conversionSettingElements } from './elements.js';
+import { renderNextAction } from './next-action.js';
+import { pageElements, conversionSettingElements, conversionButtons, zipButtons } from './elements.js';
 import { updateImageRowButtons } from './file-list.js';
 import { getQualityDescription } from '../quality.js';
 import { renderConversionSummary } from './conversion-summary.js';
@@ -46,17 +47,21 @@ export function renderPage(appState) {
     ? '変換設定を確認して実行してください' : '画像を追加して変換設定を確認してください';
   pageElements.sizeButton.disabled = isLocked;
   pageElements.fileCount.textContent = `${imageEntries.length}枚`;
-  pageElements.convertButton.disabled = isLocked || !hasUnconvertedImages;
-  pageElements.zipButton.disabled = isLocked || completedEntries.length === 0;
+  // 2か所のボタンの状態をそろえ、アイコンや枠のSVGを残して文字だけを更新します。
+  for (const button of conversionButtons) {
+    button.disabled = isLocked || !hasUnconvertedImages;
+    button.querySelector('.button-label').textContent = isConverting ? '変換中…' : 'WebPに変換';
+  }
+  for (const button of zipButtons) {
+    button.disabled = isLocked || completedEntries.length === 0;
+    button.querySelector('.button-label').textContent = isCreatingZip ? 'ZIPを作成中…' : 'まとめてZIP保存';
+  }
   pageElements.clearButton.disabled = isLocked || imageEntries.length === 0;
   pageElements.chooseFilesButton.disabled = isCreatingZip;
-  // ボタン内のアイコンを消さないよう、専用の文字要素だけを書き換えます。
-  pageElements.convertButton.querySelector('.button-label').textContent = isConverting ? '変換中…' : 'WebPに変換';
-  pageElements.zipButton.querySelector('.button-label').textContent = isCreatingZip ? 'ZIPを作成中…' : 'まとめてZIP保存';
-
   for (const settingElement of conversionSettingElements) settingElement.disabled = isLocked;
   for (const imageEntry of imageEntries) updateImageRowButtons(imageEntry, isLocked);
   renderConversionSummary(completedEntries);
+  renderNextAction(appState);
 }
 
 /** 現在のファイル名と完了数をprogress要素に反映します。 */

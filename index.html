@@ -59,10 +59,11 @@
 <main class="wrap">
   <section class="workspace" aria-label="WebP変換ツール">
     <section id="drop-zone" class="drop-zone panel" aria-labelledby="upload-title">
-      <div class="upload-copy"><h2 id="upload-title">画像を追加</h2><p>ここにドラッグ＆ドロップ<br>またはファイルを選択</p>
+      <div class="upload-copy"><h2 id="upload-title">画像を追加</h2><p>画像・フォルダをドラッグ＆ドロップ<br>またはファイルを選択</p>
         <button id="choose-files" class="button secondary" type="button"><svg aria-hidden="true"><use href="#icon-plus"/></svg>画像を選択</button>
         <input id="file-input" type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp,image/avif,.jpg,.jpeg,.png,.gif,.webp,.bmp,.avif" multiple hidden>
-        <p class="upload-note">JPEG / PNG / GIF / WebP / BMP / AVIF<br>1枚50MBまで・一覧100枚まで</p>
+        <p class="upload-note">JPEG / PNG / GIF / WebP / BMP / AVIF<br>1枚50MBまで・一覧100枚まで<br>フォルダ内・サブフォルダ内の対応画像を抽出</p>
+        <div id="upload-tip" class="upload-tip" hidden><span id="upload-tip-title" class="tip-label">次は画像を変換</span><p id="upload-tip-text">変換設定を調整し、「WebPに変換」を押してください。変換後は、画質の比較・保存に進めます。</p><button id="convert-from-upload" class="button secondary step-action" type="button" disabled><span class="button-label">WebPに変換</span><svg aria-hidden="true"><use href="#icon-arrow"/></svg></button><button id="zip-from-upload" class="button secondary step-action" type="button" hidden disabled><svg class="download-action-icon" aria-hidden="true"><use href="#icon-download"/></svg><span class="button-label">まとめてZIP保存</span></button></div>
       </div>
       <div class="file-art" aria-hidden="true"><div class="file-stack"><div class="art-file back"><svg><use href="#icon-image"/></svg><span>JPEG</span></div><div class="art-file middle"><svg><use href="#icon-image"/></svg><span>PNG</span></div><div class="art-file front"><svg><use href="#icon-image"/></svg><span>WebP</span></div></div><div class="art-shadow"></div></div>
     </section>
@@ -84,7 +85,8 @@
       <div id="output-placeholder"><strong id="output-count">—</strong><p>画像を追加して<br>変換設定を確認してください</p></div>
       <div id="summary" class="summary" hidden aria-live="polite"></div>
       <div class="progress-area" id="progress-area" hidden><div class="progress-label" role="status"><span id="progress-text"></span><span id="progress-count"></span></div><progress id="progress" value="0" max="1" aria-label="画像の変換進捗"></progress></div>
-      <div class="output-actions"><button id="convert-all" class="button primary" type="button" disabled><span class="button-label">WebPに変換</span><svg aria-hidden="true"><use href="#icon-arrow"/></svg></button><button id="download-zip" class="button secondary" type="button" disabled><svg aria-hidden="true"><use href="#icon-download"/></svg><span class="button-label">まとめてZIP保存</span></button></div>
+      <div id="next-action" class="next-action" role="status" aria-live="polite" hidden><span id="next-action-title" class="tip-label" aria-hidden="true">次は画像を変換</span><p id="next-action-text"></p></div>
+      <div class="output-actions"><button id="convert-all" class="button secondary step-action" type="button" disabled><span class="button-label">WebPに変換</span><svg aria-hidden="true"><use href="#icon-arrow"/></svg></button><button id="download-zip" class="button secondary step-action" type="button" disabled><svg class="download-action-icon" aria-hidden="true"><use href="#icon-download"/></svg><span class="button-label">まとめてZIP保存</span></button></div>
     </section>
   </section>
   <div class="workspace-foot"><p><svg aria-hidden="true"><use href="#icon-shield"/></svg>画像はブラウザ内で処理されます</p><p>GIF・アニメーション画像は静止画になります。</p></div>
@@ -95,7 +97,7 @@
       <article class="workflow-card depth-surface" data-step="upload" data-phase="ready">
         <div class="workflow-card-top"><span class="step-number">01</span><span>IMPORT</span><svg aria-hidden="true"><use href="#icon-plus"/></svg></div>
         <div class="workflow-scene import-scene" aria-hidden="true"><div class="mini-drop"><svg><use href="#icon-plus"/></svg></div><div class="demo-file demo-jpeg"><svg><use href="#icon-image"/></svg><span>JPEG</span></div><div class="demo-file demo-png"><svg><use href="#icon-image"/></svg><span>PNG</span></div><div class="import-result"><span>✓</span> 2枚を追加</div></div>
-        <div class="workflow-copy"><h3>ファイルを追加</h3><p>画像をドロップするか、ファイルを選択。異なる形式もまとめて追加できます。</p></div>
+        <div class="workflow-copy"><h3>ファイルを追加</h3><p>画像・フォルダをドロップするか、ファイルを選択。フォルダ内の対応画像をまとめて追加できます。</p></div>
         <button type="button" class="guide-play" data-play-step="upload"><span>追加の動きを見る</span><svg aria-hidden="true"><use href="#icon-play"/></svg></button>
       </article>
       <article class="workflow-card depth-surface" data-step="settings" data-phase="ready">
