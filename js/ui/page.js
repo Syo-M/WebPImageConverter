@@ -1,3 +1,4 @@
+import { enlargementSettings } from './enlargement-settings.js';
 import { renderNextAction } from './next-action.js';
 import { pageElements, conversionSettingElements, conversionButtons, zipButtons } from './elements.js';
 import { updateImageRowButtons } from './file-list.js';
@@ -13,6 +14,7 @@ export function showNotice(message) {
 /** 入力欄は文字列なので、Numberで数値へ変換してから変換処理へ渡します。 */
 export function readConversionSettings() {
   return {
+    ...enlargementSettings,
     qualityRatio: Number(pageElements.qualityInput.value) / 100,
     maxLongEdge: Number(pageElements.maxSizeInput.value),
     useWhiteBackground: pageElements.whiteBackgroundCheckbox.checked,
@@ -38,6 +40,10 @@ export function renderPage(appState) {
   const isLocked = isConverting || isCreatingZip;
   const completedEntries = imageEntries.filter((imageEntry) => imageEntry.convertedBlob);
   const hasUnconvertedImages = imageEntries.some((imageEntry) => !imageEntry.convertedBlob);
+  // 拡大を許可して長辺を指定した場合だけ、ボタンにも処理内容を明示します。
+  // 「元のサイズ」（0）は拡大しないため、通常の表記を使います。
+  const conversionLabel = enlargementSettings.allowEnlargement && Number(pageElements.maxSizeInput.value) > 0
+    ? '拡大してWebPに変換' : 'WebPに変換';
 
   pageElements.emptyState.hidden = imageEntries.length > 0;
   pageElements.resultsFootnote.hidden = imageEntries.length === 0;
@@ -50,7 +56,7 @@ export function renderPage(appState) {
   // 2か所のボタンの状態をそろえ、アイコンや枠のSVGを残して文字だけを更新します。
   for (const button of conversionButtons) {
     button.disabled = isLocked || !hasUnconvertedImages;
-    button.querySelector('.button-label').textContent = isConverting ? '変換中…' : 'WebPに変換';
+    button.querySelector('.button-label').textContent = isConverting ? '変換中…' : conversionLabel;
   }
   for (const button of zipButtons) {
     button.disabled = isLocked || completedEntries.length === 0;
@@ -61,7 +67,7 @@ export function renderPage(appState) {
   for (const settingElement of conversionSettingElements) settingElement.disabled = isLocked;
   for (const imageEntry of imageEntries) updateImageRowButtons(imageEntry, isLocked);
   renderConversionSummary(completedEntries);
-  renderNextAction(appState);
+  renderNextAction(appState, conversionLabel);
 }
 
 /** 現在のファイル名と完了数をprogress要素に反映します。 */

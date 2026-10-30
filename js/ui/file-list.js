@@ -1,8 +1,9 @@
+import { enlargementSettings } from './enlargement-settings.js';
 import { pageElements } from './elements.js';
 import { formatFileSize } from '../utils/format-file-size.js';
 
 /** templateのひな型をコピーし、画像1枚分の行とボタン操作を作成します。 */
-export function addImageRow(imageEntry, { onDownloadRequested, onRemoveRequested, onCompareRequested }) {
+export function addImageRow(imageEntry, { onDownloadRequested, onRemoveRequested, onCompareRequested, onKindChanged }) {
   const rowElement = pageElements.fileTemplate.content.firstElementChild.cloneNode(true);
   imageEntry.rowElement = rowElement;
 
@@ -22,6 +23,7 @@ export function addImageRow(imageEntry, { onDownloadRequested, onRemoveRequested
   rowElement.querySelector('.remove-one').addEventListener('click', () => {
     onRemoveRequested(imageEntry);
   });
+  rowElement.querySelector('.image-kind').addEventListener('change', (event) => onKindChanged(imageEntry, event.target.value));
   renderImageRow(imageEntry);
   pageElements.fileList.append(rowElement);
 }
@@ -29,6 +31,7 @@ export function addImageRow(imageEntry, { onDownloadRequested, onRemoveRequested
 /** 管理データを読み取り、ファイル名・容量・状態を1行に反映します。 */
 export function renderImageRow(imageEntry) {
   const rowElement = imageEntry.rowElement;
+  rowElement.querySelector('.image-kind-field').hidden = !enlargementSettings.allowEnlargement || enlargementSettings.enlargementMode !== 'custom' || /\.svg$/i.test(imageEntry.originalFile.name);
   const originalFileName = imageEntry.originalFile.name;
   const fileNameElement = rowElement.querySelector('.file-name');
   fileNameElement.textContent = originalFileName;
@@ -36,11 +39,12 @@ export function renderImageRow(imageEntry) {
 
   let detailText = formatFileSize(imageEntry.originalFile.size);
   if (imageEntry.outputWidth) {
-    detailText += ` ・ ${imageEntry.outputWidth} × ${imageEntry.outputHeight} px`;
+    detailText += ` ・ ${imageEntry.originalWidth} × ${imageEntry.originalHeight} → ${imageEntry.outputWidth} × ${imageEntry.outputHeight} px`;
   }
   if (imageEntry.convertedBlob) {
     detailText += ` → ${formatFileSize(imageEntry.convertedBlob.size)} ・ ${imageEntry.outputFileName}`;
   }
+  if (imageEntry.convertedBlob && imageEntry.enlargementRatio > 1) detailText += ` ・ ${imageEntry.enlargementRatio.toFixed(2)}倍・${imageEntry.processingMethod}`;
   rowElement.querySelector('.file-detail').textContent = detailText;
   rowElement.querySelector('.file-error').textContent = imageEntry.errorMessage;
 
@@ -91,6 +95,7 @@ export function updateImageRowButtons(imageEntry, isLocked) {
   imageEntry.rowElement.querySelectorAll('.compare-preview, .compare-action').forEach((button) => {
     button.disabled = isLocked || !imageEntry.convertedBlob;
   });
+  imageEntry.rowElement.querySelector('.image-kind').disabled = isLocked;
   imageEntry.rowElement.querySelector('.remove-one').disabled = isLocked;
   imageEntry.rowElement.querySelector('.download-one').disabled = isLocked || !imageEntry.convertedBlob;
 }

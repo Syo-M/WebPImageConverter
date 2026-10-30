@@ -1,0 +1,55 @@
+/* 拡大設定は必要な場合だけ展開。既存のガラス面とテーマの色変数を引き継ぎます。 */
+.enlargement-section {margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.enlargement-toggle {display:flex;align-items:center;gap:12px;cursor:pointer;position:relative;font-size:13px}
+.enlargement-toggle small {display:block;color:var(--muted);font-size:11px;margin-top:5px}
+.enlargement-toggle input {position:absolute;right:0;width:44px;height:28px;opacity:0}
+.toggle-track {margin-left:auto;flex-shrink:0;width:44px;height:26px;border:1px solid var(--line);border-radius:30px;background:var(--muted);position:relative}
+.toggle-track::before {content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:white;box-shadow:0 1px 3px #0003;transition:transform .2s}
+.enlargement-toggle input:checked + .toggle-track {background:var(--purple)}
+.enlargement-toggle input:checked + .toggle-track::before {transform:translateX(18px)}
+.enlargement-toggle input:focus-visible + .toggle-track {outline:3px solid var(--purple);outline-offset:3px}
+#enlargement-options {margin-top:18px}
+.enlargement-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.enlargement-field {display:block;font-size:12px;font-weight:600;margin:12px 0;color:var(--ink)}
+.enlargement-field select {display:block;width:100%;margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:12px 30px 12px 10px;background:var(--tint);color:var(--ink);font:inherit}
+.enlargement-field input[type=range] {display:block;width:100%;margin-top:12px;accent-color:var(--purple)}
+.enlargement-field output {float:right;color:var(--purple)}
+.enlargement-help {font-size:11px;line-height:1.8;color:var(--muted)}
+.cancel-conversion {position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:100;box-shadow:0 8px 32px #0003}
+.dialog-footer p {max-width:260px}
+@media(max-width:430px) {.enlargement-grid {grid-template-columns:1fr}.enlargement-toggle {font-size:12px}}
+@media(prefers-reduced-motion:reduce) {.toggle-track::before {transition:none}}
+@media(forced-colors:active) {.toggle-track {forced-color-adjust:none;background:Canvas;border-color:CanvasText}.enlargement-toggle input:checked + .toggle-track {background:Highlight}.toggle-track::before {background:CanvasText}}
+.image-kind-field {display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:11px;color:var(--muted);margin:8px 0}
+.image-kind {font:inherit;max-width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--tint);color:var(--ink)}
+select:focus-visible {outline:3px solid var(--purple);outline-offset:3px}
+.enlargement-help summary {cursor:pointer;color:var(--purple);padding:6px 0}
+@media(max-width:430px) {.size-dialog .dialog-footer {flex-direction:column;align-items:stretch}.dialog-footer p {max-width:none}.dialog-footer .button {width:100%}}
+/* 1つの補正を1枚のカードへまとめ、目的・操作・現在の効果の階層を明示します。 */
+.effect-card {margin-top:20px;padding:20px;border:1px solid var(--line);border-radius:18px;background:var(--white);box-shadow:0 3px 12px #30235a06}
+.effect-card + .effect-card {margin-top:16px}
+.effect-card-heading {display:flex;align-items:center;justify-content:space-between;gap:16px}
+.effect-card-heading h3 {font-size:15px;font-weight:650;line-height:1.5;margin:0;color:var(--ink)}
+.effect-value {font-size:20px;font-weight:650;line-height:1.3;color:var(--purple);font-variant-numeric:tabular-nums;flex-shrink:0}
+.effect-purpose {font-size:12px;line-height:1.85;color:var(--muted);margin:10px 0 0}
+.effect-control {margin:20px 0 18px}
+.effect-control input[type=range] {display:block;width:100%;margin:0;height:6px;accent-color:var(--purple)}
+.effect-scale {display:flex;justify-content:space-between;font-size:10px;line-height:1.5;letter-spacing:.04em;color:var(--muted);margin-top:10px}
+.effect-info {padding:14px;border-radius:12px;background:var(--tint);border:1px solid var(--line)}
+.effect-info .quality-heading {display:flex;gap:8px;flex-wrap:wrap;align-items:center;line-height:1.6}
+.effect-caption {font-size:10px;color:var(--muted);margin-right:2px}
+.effect-info .quality-heading strong {font-size:11px;font-weight:650;line-height:1.6;border-radius:6px;padding:2px 8px;background:var(--white);color:var(--purple)}
+.effect-info .quality-heading strong[data-level=off] {color:var(--muted)}
+.effect-range {margin-left:auto;font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.effect-info p {font-size:12px;line-height:1.9;margin:10px 0 0;color:var(--ink)}
+/* 共通の読み物は操作カードと分け、弱い背景と見出しでひとまとまりにします。 */
+.effect-note {margin-top:24px;padding:2px 0 2px 14px;border-left:3px solid var(--purple)}
+.effect-note h4 {font-size:12px;font-weight:650;margin:0 0 7px;color:var(--ink)}
+.effect-note .enlargement-help {margin:0;line-height:1.9}
+.enlargement-reference {margin-top:20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 0}
+.enlargement-reference summary {font-size:12px;font-weight:600;padding:8px 0}
+.enlargement-reference p {margin:8px 0;line-height:1.9}
+.enlargement-footnote {margin:18px 0 0;font-size:10px;line-height:1.9}
+.size-dialog .dialog-footer {border-top:1px solid var(--line);padding-top:18px;margin-top:24px}
+@media(max-width:430px) {.effect-card {padding:16px}.effect-card-heading h3 {font-size:14px}.effect-value {font-size:19px}.effect-info {padding:12px}}
+@media(forced-colors:active) {.effect-card,.effect-info,.effect-info .quality-heading strong {background:Canvas;border:1px solid CanvasText;color:CanvasText}.effect-note {border-color:CanvasText}}

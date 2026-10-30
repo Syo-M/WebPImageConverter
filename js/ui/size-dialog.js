@@ -1,7 +1,9 @@
+import { bindEnlargementSettings, enlargementSettings } from './enlargement-settings.js';
 import { pageElements } from './elements.js';
 
 /** モーダル内の選択は、適用するまで変換設定を書き換えません。 */
 export function bindSizeDialog() {
+  const enlargement = bindEnlargementSettings();
   const dialog = document.getElementById('size-dialog');
   const sizeButton = pageElements.sizeButton;
   const sizeValue = document.getElementById('size-value');
@@ -12,6 +14,7 @@ export function bindSizeDialog() {
   let draftValue = '0'; // キャンセル時はこの一時的な選択を破棄します。
 
   sizeButton.addEventListener('click', () => {
+    enlargement.restore();
     const currentValue = pageElements.maxSizeInput.value;
     const presetExists = choices.some((choice) => choice.value === currentValue);
     draftValue = presetExists ? currentValue : 'custom';
@@ -44,9 +47,10 @@ export function bindSizeDialog() {
       customInput.focus();
       return;
     }
-    if (Number(pageElements.maxSizeInput.value) !== selectedValue) {
+    const enlargementChanged = enlargement.apply();
+    if (Number(pageElements.maxSizeInput.value) !== selectedValue || enlargementChanged) {
       pageElements.maxSizeInput.value = String(selectedValue);
-      sizeValue.textContent = selectedValue ? `長辺 ${selectedValue.toLocaleString()} px` : '元のサイズ';
+      sizeValue.textContent = selectedValue ? `長辺 ${selectedValue.toLocaleString()} px${enlargementSettings.allowEnlargement ? '・拡大可' : ''}` : '元のサイズ';
       // 通常の設定欄と同じinputイベントで、変換結果のリセットを通知します。
       pageElements.maxSizeInput.dispatchEvent(new Event('input', { bubbles: true }));
     }

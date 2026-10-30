@@ -39,7 +39,8 @@ export function bindGuideDepth(reducedMotion) {
       surface.style.setProperty('--surface-y', '0deg');
     });
   }
-  const revealElements = [...document.querySelectorAll('.workflow-card, .faq-intro, .faq-content')];
+  // 補間の解説も既存ガイドと同じ登場・傾きの処理を共有します。
+  const revealElements = [...document.querySelectorAll('.workflow-card, .faq-intro, .faq-content, .resampling-card')];
   if (reducedMotion.matches || !('IntersectionObserver' in window)) return;
   const observer = new IntersectionObserver((entries) => {
     for (const entry of entries) {

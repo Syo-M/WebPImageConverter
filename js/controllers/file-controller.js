@@ -29,6 +29,14 @@ export function addImageFiles(incomingFiles, importMessages = []) {
       onDownloadRequested: downloadSingleImage,
       onRemoveRequested: removeImage,
       onCompareRequested: openImageComparison,
+      onKindChanged(entry, kind) {
+        if (appState.isConverting || appState.isCreatingZip) return;
+        entry.imageKindOverride = kind;
+        resetConversionResult(entry);
+        renderImageRow(entry);
+        renderPage(appState);
+        showNotice('画像の種類を変更しました。再変換すると適用されます。');
+      },
     });
   }
 

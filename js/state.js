@@ -23,8 +23,11 @@ export function createImageEntry(originalFile, existingImageEntries) {
     originalPreviewUrl: URL.createObjectURL(originalFile),
     convertedBlob: null, // 変換成功時にWebPのBlobを入れます。
     convertedPreviewUrl: null, // 変換済みWebPを表示するためのURL。
-    outputWidth: null, // 縮小後の横幅（ピクセル）。
-    outputHeight: null, // 縮小後の高さ（ピクセル）。
+    imageKindOverride: '', // 空欄は全体の種類設定に従います。混在した画像は個別に変更できます。
+    originalWidth: null, originalHeight: null, // デコード後の元寸法。比較と倍率の説明に使います。
+    processingMethod: '', enlargementRatio: 1, // 実際に適用した補間方式と倍率。
+    outputWidth: null, // 処理後の横幅（ピクセル）。
+    outputHeight: null, // 処理後の高さ（ピクセル）。
     previewFailed: false, // 元画像のプレビューが読み込めなかったか。
     isConverting: false, // この1枚を処理しているか。
     errorMessage: '', // 変換に失敗した場合の説明。
@@ -41,6 +44,9 @@ export function resetConversionResult(imageEntry) {
   imageEntry.convertedPreviewUrl = null;
   imageEntry.outputWidth = null;
   imageEntry.outputHeight = null;
+  imageEntry.originalWidth = imageEntry.originalHeight = null;
+  imageEntry.processingMethod = '';
+  imageEntry.enlargementRatio = 1;
   imageEntry.errorMessage = '';
 }
 

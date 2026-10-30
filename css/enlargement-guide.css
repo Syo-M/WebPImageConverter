@@ -1,0 +1,105 @@
+/* FAQから続く読み物。補間と補正を分け、変換設定と同じ配色で理解を助けます。 */
+.enlargement-guide {border-top:1px solid var(--line);padding:42px 0 54px}
+.enlargement-start {display:flex;align-items:center;gap:18px;padding:24px;background:linear-gradient(120deg,var(--white),var(--tint))}
+.guide-start-icon {display:grid;place-items:center;width:46px;height:46px;flex-shrink:0;border:1px solid var(--line);border-radius:15px;background:var(--white);color:var(--purple)}
+.enlargement-start h3 {font-size:16px;margin:0 0 8px;line-height:1.6}
+.enlargement-start p {font-size:12px;line-height:1.9;color:var(--muted);margin:0;max-width:630px}
+.learning-heading {display:flex;align-items:flex-start;gap:14px;margin:36px 0 20px}
+.learning-number {font-size:12px;font-weight:650;display:grid;place-items:center;background:var(--tint);color:var(--purple);border:1px solid var(--line);border-radius:12px;min-width:35px;height:35px}
+.learning-heading h3 {font-size:17px;line-height:1.6;margin:1px 0 7px}
+.learning-heading p {font-size:12px;line-height:1.9;color:var(--muted);margin:0}
+.resampling-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;perspective:1400px}
+.resampling-card {padding:22px;min-width:0;box-shadow:var(--shadow);transition:border-color .2s,box-shadow .2s}
+.resampling-card:hover {border-color:var(--purple);box-shadow:0 12px 30px #6650b618}
+.resampling-card.guide-reveal {transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1),border-color .2s,box-shadow .2s}
+.resampling-card-top {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:20px}
+.method-index {color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+.resampling-card h4 {font-size:16px;margin:0 0 8px;line-height:1.6}
+.method-tagline {font-size:11px;font-weight:600;color:var(--purple);margin:0 0 14px;line-height:1.8}
+.method-description {font-size:12px;line-height:1.95;color:var(--muted);margin:0}
+.resampling-card dl {border-top:1px solid var(--line);margin:20px 0 0;padding-top:16px;display:grid;gap:14px}
+.resampling-card dt {font-size:10px;letter-spacing:.03em;color:var(--muted);margin-bottom:5px}
+.resampling-card dd {font-size:11px;line-height:1.9;color:var(--ink);margin:0}
+.learning-caption {font-size:10px;line-height:1.9;color:var(--muted);margin:14px 0 0}
+.adjustment-guide-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.adjustment-guide-card {padding:24px}
+.adjustment-guide-title {display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.adjustment-guide-title>svg {width:19px;height:19px;color:var(--purple)}
+.adjustment-guide-title h4 {font-size:17px;line-height:1.6;margin:0}
+.adjustment-guide-title>span {font-size:10px;color:var(--purple);background:var(--tint);padding:5px 8px;border-radius:7px;margin-left:auto}
+.adjustment-guide-card>p {font-size:12px;line-height:1.95;color:var(--muted);margin:16px 0 20px}
+.learning-tip {background:var(--tint);border:1px solid var(--line);border-radius:12px;padding:16px}
+.learning-tip strong {display:block;font-size:12px;font-weight:600;margin-bottom:8px}
+.learning-tip span {display:block;font-size:11px;color:var(--muted);line-height:1.95}
+.learning-footnote {display:flex;gap:14px;padding:24px 0 0;margin-top:28px;border-top:1px solid var(--line);align-items:flex-start;color:var(--muted)}
+.learning-footnote svg {width:20px;height:20px;color:var(--purple);margin-top:2px}
+.learning-footnote p {font-size:11px;line-height:2;margin:0}
+.learning-footnote strong {color:var(--ink);font-weight:600}
+.faq-answer a {color:var(--purple);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:1000px) {.resampling-grid {grid-template-columns:repeat(2,minmax(0,1fr))}.enlargement-start {flex-wrap:wrap}.enlargement-start>div {flex:1;min-width:0}}
+@media(max-width:600px) {.enlargement-guide {padding-top:30px}.enlargement-start {padding:20px;gap:14px}.enlargement-start h3 {font-size:15px}.resampling-grid,.adjustment-guide-grid {grid-template-columns:minmax(0,1fr)}.learning-heading h3 {font-size:16px}.resampling-card {padding:22px}.method-illustration {width:114px}.resampling-card-top {margin-bottom:10px}.adjustment-guide-card {padding:22px}.adjustment-guide-title h4 {font-size:16px}}
+@media(prefers-reduced-motion:reduce) {.resampling-card,.resampling-card.guide-reveal,.method-line {transition:none}.resampling-card:hover .method-line {translate:none}}
+@media(forced-colors:active) {.enlargement-start,.resampling-card,.learning-tip {background:Canvas;box-shadow:none}.method-reference {opacity:.5}.method-line {stroke:CanvasText}.learning-number {border-color:CanvasText}}
+/* ネイティブdetailsを入口にし、閉じている間は解説も模式図もレイアウトに含めません。 */
+.guide-teaser {font-size:12px;line-height:1.9;color:var(--muted);margin:12px 0 0}
+.guide-disclosure {border:1px solid var(--line);border-radius:22px;background:var(--white);overflow:hidden}
+.guide-disclosure>summary {list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px;cursor:pointer;padding:23px 26px;background:linear-gradient(110deg,var(--white),var(--tint));min-height:90px}
+.guide-disclosure>summary::-webkit-details-marker {display:none}
+.guide-disclosure>summary strong {display:block;font-size:15px;line-height:1.6}
+.guide-disclosure>summary small {display:block;font-size:11px;color:var(--muted);line-height:1.8;margin-top:5px}
+.disclosure-action {display:flex;align-items:center;gap:10px;color:var(--purple);font-size:12px;flex-shrink:0}
+.disclosure-action svg {width:18px;height:18px;transition:rotate .3s}
+.disclosure-open,.guide-disclosure[open] .disclosure-closed {display:none}
+.guide-disclosure[open] .disclosure-open {display:inline}
+.guide-disclosure[open] .disclosure-action svg {rotate:180deg}
+.guide-disclosure-content {overflow:hidden}
+.guide-disclosure-body {padding:24px}
+.guide-inline-link {display:inline;padding:0;border:0;background:none;color:var(--purple);font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+/* 基準面・参照線・補間線の3層に分けた立体シーン。線の明暗は装飾用です。 */
+.resampling-card-top {margin-bottom:0}
+.visual-replay {display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;border:1px solid var(--line);border-radius:20px;background:var(--white);color:var(--purple);padding:5px 10px;font-size:10px;cursor:pointer}
+.visual-replay:hover {background:var(--tint);border-color:var(--purple)}
+.visual-replay svg {width:11px;height:11px}
+.curve-scene {height:170px;perspective:650px;position:relative;display:grid;place-items:center;margin:4px -8px 18px}
+.curve-stage {width:100%;max-width:235px;height:116px;position:relative;transform-style:preserve-3d;transform:rotateX(25deg) rotateY(-12deg);transition:transform .5s ease}
+.curve-floor {position:absolute;inset:5px 0;border:1px solid var(--line);border-radius:16px;background:linear-gradient(0deg,transparent 95%,var(--line) 95%),linear-gradient(90deg,transparent 95%,var(--line) 95%),var(--tint);background-size:18px 18px;box-shadow:2px 3px 0 var(--line),7px 12px 20px #00000012;transform:translateZ(-8px)}
+.curve-source,.method-illustration {position:absolute;inset:0;width:100%;height:100%;overflow:visible;color:var(--purple)}
+.curve-source {transform:translateZ(1px);stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 4;opacity:.35}
+.method-illustration {transform:translateZ(24px);filter:drop-shadow(0 6px 4px #6650b633)}
+.method-underlay {stroke:var(--purple);stroke-width:2;opacity:.2}
+.method-line {stroke:var(--purple);stroke-width:2.5;stroke-dasharray:200;stroke-dashoffset:0}
+.curve-glow {stroke:var(--ink);stroke-width:3;stroke-dasharray:14 200;opacity:0}
+.sample-points circle {fill:var(--white);stroke:var(--purple);stroke-width:1.4}
+.scene-caption {position:absolute;bottom:0;font-size:9px;line-height:1.6;color:var(--muted);text-align:center}
+.is-playing .curve-stage {animation:curve-tilt 1.6s ease-in-out 1}
+.is-playing .method-line {animation:curve-draw 1.4s cubic-bezier(.2,.6,.3,1) 1}
+.is-playing .curve-glow {animation:curve-trace 1.6s linear 1}
+.is-playing .sample-points {animation:sample-light 1.6s ease 1}
+/* 補正は同じ図形を左右へ置き、ぼやけ・ざらつきの違いだけを見せます。 */
+.adjustment-visual-head {display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px;font-size:10px;color:var(--muted)}
+.adjustment-scene {display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);gap:12px;align-items:center;perspective:700px;padding:18px 0 4px}
+.sample-tile {position:relative;min-width:0;padding:12px 9px 9px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(140deg,var(--white),var(--tint));box-shadow:2px 4px 0 var(--line),0 10px 18px #0000000b;transform:rotateY(-10deg) rotateX(7deg);overflow:hidden}
+.sample-after {transform:rotateY(10deg) rotateX(7deg)}
+.sample-tile svg {width:100%;height:86px;display:block;stroke:var(--purple);stroke-width:2.5}
+.sample-tile>span {display:block;text-align:center;font-size:10px;color:var(--muted);margin-top:8px}
+.sample-mountain {fill:var(--tint);stroke-linejoin:round}
+.sample-sun {fill:var(--purple);stroke:none}
+.sample-arrow {color:var(--purple);text-align:center;font-size:16px}
+.sharpness-scene .sample-before svg {filter:blur(1.2px)}
+.sample-noise {fill:var(--muted);stroke:none;opacity:.65}
+.denoise-scene .sample-after .sample-noise {opacity:.08}
+.sample-after::after {content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,#bfa5fa44 50%,transparent 70%);translate:-110% 0;pointer-events:none}
+.is-playing .sample-after::after {animation:sample-sweep 1.6s ease-in-out 1}
+.sharpness-scene.is-playing .sample-after svg {animation:edge-focus 1.6s ease 1}
+.denoise-scene.is-playing .sample-after .sample-noise {animation:noise-soften 1.6s ease 1}
+@keyframes curve-draw {from{stroke-dashoffset:200}to{stroke-dashoffset:0}}
+@keyframes curve-trace {0%{opacity:0;stroke-dashoffset:20}20%{opacity:.85}85%{opacity:.85}100%{opacity:0;stroke-dashoffset:-200}}
+@keyframes curve-tilt {0%,100%{transform:rotateX(25deg) rotateY(-12deg)}50%{transform:rotateX(12deg) rotateY(10deg) translateY(-4px)}}
+@keyframes sample-light {0%,100%{opacity:.6}50%{opacity:1;filter:drop-shadow(0 0 4px var(--purple))}}
+@keyframes sample-sweep {to{translate:110% 0}}
+@keyframes edge-focus {0%{filter:blur(1.2px)}65%,100%{filter:blur(0)}}
+@keyframes noise-soften {0%{opacity:.65}65%,100%{opacity:.08}}
+@media(max-width:1000px) {.guide-disclosure-body {padding:20px}.curve-scene {height:175px}}
+@media(max-width:600px) {.guide-disclosure>summary {padding:18px}.guide-disclosure-body {padding:14px}.curve-scene {height:180px}.adjustment-scene {gap:6px;grid-template-columns:minmax(0,1fr) 15px minmax(0,1fr)}.sample-tile {padding:7px 4px}.sample-tile svg {height:70px}.resampling-card,.adjustment-guide-card {padding:18px}.disclosure-action {font-size:11px;gap:5px}}
+@media(prefers-reduced-motion:reduce) {.learning-scene *,.learning-scene *::after {animation:none!important;transition:none!important}.curve-stage,.sample-tile {transform:none}.disclosure-action svg {transition:none}}
+@media(forced-colors:active) {.guide-disclosure>summary,.curve-floor,.sample-tile {background:Canvas;border-color:CanvasText;box-shadow:none}.method-line,.sample-tile svg {stroke:CanvasText}.sample-points circle {fill:Canvas;stroke:CanvasText}.sample-after::after {display:none}}

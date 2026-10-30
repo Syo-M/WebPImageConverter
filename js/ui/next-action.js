@@ -4,7 +4,7 @@ import { pageElements, conversionButtons, zipButtons } from './elements.js';
 let previousActionStep = 'empty';
 
 /** 未処理の画像は変換へ、処理済みの成功画像は保存へ、次の操作を示します。 */
-export function renderNextAction({ imageEntries, isConverting, isCreatingZip }) {
+export function renderNextAction({ imageEntries, isConverting, isCreatingZip }, conversionLabel = 'WebPに変換') {
   const completedCount = imageEntries.filter((entry) => entry.convertedBlob).length;
   const pendingCount = imageEntries.filter((entry) => !entry.convertedBlob && !entry.errorMessage).length;
   // 一部が失敗しても、成功分を保存できるようZIPを強調します。全件失敗なら再試行を案内します。
@@ -25,7 +25,7 @@ export function renderNextAction({ imageEntries, isConverting, isCreatingZip }) 
   const tipMessage = isConverting ? '変換しています。完了後は画質の比較・保存に進めます。'
     : isCreatingZip ? 'ZIPを作成しています。ダウンロード開始までお待ちください。'
     : showSaveButton ? '変換が完了しました。画質を比較して確認し、まとめてZIP保存できます。'
-    : '変換設定を調整し、「WebPに変換」を押してください。変換後は、画質の比較・保存に進めます。';
+    : `変換設定を調整し、「${conversionLabel}」を押してください。変換後は、画質の比較・保存に進めます。`;
   if (pageElements.uploadTipText.textContent !== tipMessage) pageElements.uploadTipText.textContent = tipMessage;
   const step = imageEntries.length === 0 ? 'empty' : shouldSave ? 'save' : 'convert';
   pageElements.nextAction.dataset.step = step;

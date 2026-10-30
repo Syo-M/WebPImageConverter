@@ -1,3 +1,5 @@
+import { isSvgImage, prepareSvg } from './svg-image.js';
+
 /**
  * FileまたはBlobから、Canvasへ描画できる画像を読み込みます。
  * createImageBitmapはアニメーション画像の既定（通常は先頭）のフレームを使います。
@@ -26,8 +28,9 @@ export async function decodeImage(imageBlob) {
 /** 読み込み方法に関係なく、利用者向けの共通メッセージを返します。 */
 export async function readImageFile(originalFile) {
   try {
-    return await decodeImage(originalFile);
-  } catch {
+    return await decodeImage(isSvgImage(originalFile) ? (await prepareSvg(originalFile)).blob : originalFile);
+  } catch (error) {
+    if (isSvgImage(originalFile)) throw error;
     throw new Error('画像を読み込めません。ファイルの形式・破損や、ブラウザがその形式に対応しているかを確認してください。');
   }
 }

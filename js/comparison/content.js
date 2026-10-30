@@ -1,3 +1,5 @@
+import { isSvgImage, prepareSvg } from '../images/svg-image.js';
+import { decodeImage } from '../images/decode-image.js';
 import { readImageFile } from '../images/decode-image.js';
 import { formatFileSize } from '../utils/format-file-size.js';
 
@@ -5,7 +7,9 @@ import { formatFileSize } from '../utils/format-file-size.js';
 export async function loadComparisonContent(imageEntry, isCurrentRequest) {
   const canvas = document.getElementById('comparison-original');
   const outputImage = document.getElementById('comparison-converted');
-  const decodedImage = await readImageFile(imageEntry.originalFile);
+  const decodedImage = isSvgImage(imageEntry.originalFile)
+    ? await decodeImage((await prepareSvg(imageEntry.originalFile, { width: imageEntry.outputWidth, height: imageEntry.outputHeight })).blob)
+    : await readImageFile(imageEntry.originalFile);
   const originalWidth = decodedImage.naturalWidth || decodedImage.width;
   const originalHeight = decodedImage.naturalHeight || decodedImage.height;
   try {
@@ -25,9 +29,9 @@ export async function loadComparisonContent(imageEntry, isCurrentRequest) {
   await outputImage.decode();
   if (!isCurrentRequest()) return false;
   document.getElementById('comparison-original-detail').textContent =
-    `${formatFileSize(imageEntry.originalFile.size)} · ${originalWidth} × ${originalHeight} px`;
+    `${formatFileSize(imageEntry.originalFile.size)} · ${imageEntry.originalWidth || originalWidth} × ${imageEntry.originalHeight || originalHeight} px · 比較用の表示倍率調整`;
   document.getElementById('comparison-converted-detail').textContent =
-    `${formatFileSize(imageEntry.convertedBlob.size)} · ${imageEntry.outputWidth} × ${imageEntry.outputHeight} px`;
+    `${formatFileSize(imageEntry.convertedBlob.size)} · ${imageEntry.outputWidth} × ${imageEntry.outputHeight} px · ${imageEntry.processingMethod || 'ブラウザ標準'}`;
   return true;
 }
 

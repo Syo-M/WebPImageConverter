@@ -46,6 +46,6 @@ export function validateImageFile(originalFile, imageEntries) {
 /** フォルダ内の画像抽出と通常の追加で、対応形式の判断を共通にします。 */
 export function isSupportedImageFile(file) {
   if (/\.(heic|heif)$/i.test(file.name) || /^image\/(heic|heif)(-sequence)?$/i.test(file.type)) return false;
-  return /\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(file.name)
-    || /^image\/(jpeg|png|gif|webp|bmp|avif)$/i.test(file.type);
+  return /\.(jpe?g|png|gif|webp|bmp|avif|svg)$/i.test(file.name)
+    || /^image\/(jpeg|png|gif|webp|bmp|avif|svg\+xml)$/i.test(file.type);
 }

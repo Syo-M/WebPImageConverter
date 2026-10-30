@@ -3,29 +3,31 @@ export function bindFaq(reducedMotion) {
   const filters = document.getElementById('faq-filters');
   const count = document.getElementById('faq-count');
   const questions = [...document.querySelectorAll('.faq-items details')];
+  const filterButtons = [...filters.querySelectorAll('button')];
   const activeAnimations = new Map(); // 質問ごとの再生中の動きと完了処理を対応付けます。
   filters.hidden = false;
 
   // 選択カテゴリーと一致する質問だけを残し、表示件数も更新します。
-  for (const button of filters.querySelectorAll('button')) {
-    button.addEventListener('click', () => {
+  function selectCategory(button, animate = true) {
       const category = button.dataset.faqFilter;
       filters.querySelectorAll('button').forEach((filter) => {
         filter.setAttribute('aria-pressed', String(filter === button));
       });
       let visibleCount = 0;
       for (const question of questions) {
-        question.hidden = category !== 'all' && question.dataset.category !== category;
+        question.hidden = question.dataset.category !== category;
         if (question.hidden) continue;
         visibleCount += 1;
-        if (!reducedMotion.matches) question.animate(
+        if (animate && !reducedMotion.matches) question.animate(
           [{ opacity: 0.45, translate: '0 5px' }, { opacity: 1, translate: '0 0' }],
           { duration: 200, easing: 'ease-out' },
         );
       }
       count.textContent = `${visibleCount}件の質問`;
-    });
   }
+  for (const button of filterButtons) button.addEventListener('click', () => selectCategory(button));
+  // 初期表示もカテゴリー内だけに絞り、長い「全件表示」を作りません。
+  selectCategory(filterButtons.find((button) => button.getAttribute('aria-pressed') === 'true') || filterButtons[0], false);
   for (const question of questions) {
     const summary = question.querySelector('summary');
     const answer = question.querySelector('.faq-answer');
